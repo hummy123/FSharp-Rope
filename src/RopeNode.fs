@@ -22,7 +22,27 @@ module RopeNode =
         { node with
             RightIdx = rightIdx; }
 
+    let inline incrLeft node = 
+        { node with
+            LeftIdx = node.LeftIdx + 1 }
+
+    let inline incrRight node = 
+        { node with 
+            RightIdx = node.RightIdx + 1 }
+
+    let inline decrLeft node = 
+        { node with
+            LeftIdx = node.LeftIdx - 1 }
+
+    let inline decrRight node = 
+        { node with
+            RightIdx = node.RightIdx - 1 }
+
     type RopeNode with
         member this.SetIndex leftIdx rightIdx = setIndex leftIdx rightIdx this
         member this.SetRight rightIdx = setRight rightIdx this
         member this.SetLeft leftIdx = setLeft leftIdx this
+        member this.IncrLeft() = incrLeft this
+        member this.IncrRight() = incrRight this
+        member this.DecrLeft() = decrLeft this
+        member this.DecrRight() = decrRight this

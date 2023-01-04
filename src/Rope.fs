@@ -14,6 +14,11 @@ module Rope =
         | E -> 0
         | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1
 
+    let inline private sizeLeft node = 
+        match node with 
+        | E -> 0
+        | T(_, _, v, _) -> v.LeftIdx
+
     /// O(1): Returns a boolean if tree is empty.
     let inline isEmpty node =
         match node with
@@ -95,3 +100,29 @@ module Rope =
 
     let fold f x t =
         foldOpt (OptimizedClosures.FSharpFunc<_, _, _>.Adapt (f)) x t
+
+    let rec private insMin chr node =
+        match node with
+        | E -> T(1, E, RopeNode.create chr, E)
+        | T(h, l, v, r) -> T(h, insMin chr l, v.IncrLeft(), r) |> skew |> split
+
+    let rec private insMax chr =
+        function
+        | E -> T(1, E, RopeNode.create chr, E)
+        | T(h, l, v, r) -> T(h, l, v.IncrRight(), insMax chr r) |> skew |> split
+
+    let insert insIndex chr rope =
+        let rec ins curIndex node =
+            match node with
+            | E -> T(1, E, RopeNode.create chr, E)
+            | T(h, l, v, r) ->
+                if insIndex > curIndex then
+                    T(h, l, v.IncrRight(), ins (curIndex + 1) r) |> skew |> split
+                elif insIndex < curIndex then
+                    T(h, ins (curIndex - 2) l, v.IncrLeft(), r) |> skew |> split
+                else
+                    (* We want to insert at the same index as this node. *)
+                    let l = insMax chr l
+                    T(h, l, v.IncrLeft(), r) |> skew |> split
+
+        ins (sizeLeft rope) rope
