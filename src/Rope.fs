@@ -126,3 +126,52 @@ module Rope =
                     T(h, l, v.IncrLeft(), r) |> skew |> split
 
         ins (sizeLeft rope) rope
+
+    let substring (start: int) (length: int) rope =
+        let finish = start + length
+        let acc = ResizeArray<char>() (* Using mutable array for performance. *)
+        
+        let rec sub curIndex node =
+            match node with
+            | E -> ()
+            | T(h, l, v, r) ->
+                if start < curIndex
+                then sub (curIndex - 2) l
+
+                if start <= curIndex && finish >= curIndex then 
+                    for i in v.Char do
+                        acc.Add i
+
+                if finish > curIndex
+                then sub (curIndex + 1) r
+
+        sub (sizeLeft rope) rope
+        new string(acc.ToArray())
+
+    let delete (start: int) (length: int) rope =
+        let finish = start + length
+
+        let rec del curIndex node =
+            match node with
+            | E as empty -> empty
+            | T(h, l, v, r) ->
+                let left = 
+                    if start < curIndex
+                    then del (curIndex - 2) l
+                    else l
+
+                let right =
+                    if finish > curIndex
+                    then del (curIndex + 1) r
+                    else r
+
+                if start <= curIndex && finish >= curIndex then 
+                    if left = E
+                    then right
+                    else 
+                        let (newLeft, newVal) = splitMax left
+                        T(h, newLeft, newVal, right) |> adjust
+                else
+                    T(h, left, v.SetIndex (size left) (size right), right) |> adjust
+
+        del (sizeLeft rope) rope
