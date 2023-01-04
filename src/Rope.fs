@@ -2,6 +2,7 @@
 
 open Types
 open RopeNode
+open System.Globalization
 
 (* Implementation of AA trees, used as the rope's backing structure,
  * guided by following paper: https://arxiv.org/pdf/1412.4882.pdf *)
@@ -111,7 +112,8 @@ module Rope =
         | E -> T(1, E, RopeNode.create chr, E)
         | T(h, l, v, r) -> T(h, l, v.IncrRight(), insMax chr r) |> skew |> split
 
-    let insert insIndex chr rope =
+    (* Insert a char array. Private because a consumer would likely want to insert a string. *)
+    let private insertChr insIndex chr rope =
         let rec ins curIndex node =
             match node with
             | E -> T(1, E, RopeNode.create chr, E)
@@ -127,6 +129,21 @@ module Rope =
 
         ins (sizeLeft rope) rope
 
+    /// Inserts a string into a rope.
+    let insert insIndex (str: string) rope =
+        let enumerator = StringInfo.GetTextElementEnumerator(str)
+        let rec ins idxAcc ropeAcc = 
+            if enumerator.MoveNext() then
+                let cur = enumerator.GetTextElement().ToCharArray()
+                let rope = insertChr idxAcc cur ropeAcc
+                ins (idxAcc + 1) rope
+            else
+                ropeAcc
+        ins insIndex rope
+
+    let create str = insert 0 str E
+
+    /// Returns a substring from the rope at the given start index and length.
     let substring (start: int) (length: int) rope =
         let finish = start + length
         let acc = ResizeArray<char>() (* Using mutable array for performance. *)
@@ -148,6 +165,7 @@ module Rope =
         sub (sizeLeft rope) rope
         new string(acc.ToArray())
 
+    /// Deletes a range of characters from the rope at the given start index and length.
     let delete (start: int) (length: int) rope =
         let finish = start + length
 
@@ -175,3 +193,8 @@ module Rope =
                     T(h, left, v.SetIndex (size left) (size right), right) |> adjust
 
         del (sizeLeft rope) rope
+
+    type Rope with
+        member this.Insert(index, str) = insert index str this
+        member this.Substring(startIndex, length) = substring startIndex length this
+        member this.Delete(startIndex, length) = delete startIndex length this
