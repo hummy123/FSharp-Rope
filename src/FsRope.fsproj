@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
-    <RootNamespace>Fs_Rope</RootNamespace>
+    <RootNamespace>FsRope</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Library.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="RopeNode.fs" />
+    <Compile Include="Rope.fs" />
   </ItemGroup>
 
 </Project>
