@@ -9,6 +9,9 @@ module RopeNode =
         RightIdx = 0;
     }
 
+    let inline setChar chr node =
+        { node with Char = chr }
+
     let inline setIndex leftIdx rightIdx node = 
         { node with
             LeftIdx = leftIdx;
@@ -46,3 +49,4 @@ module RopeNode =
         member this.IncrRight() = incrRight this
         member this.DecrLeft() = decrLeft this
         member this.DecrRight() = decrRight this
+        member this.SetChar chr = setChar chr this

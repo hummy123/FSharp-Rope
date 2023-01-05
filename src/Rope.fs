@@ -10,6 +10,25 @@ open System.Globalization
 module Rope =
     let empty = E
 
+    let rec private foldOpt (f: OptimizedClosures.FSharpFunc<_, _, _>) x t =
+        match t with
+        | E -> x
+        | T(_, l, v, r) ->
+            let x = foldOpt f x l
+            let x = f.Invoke(x, v)
+            foldOpt f x r
+
+    let fold f x t =
+        foldOpt (OptimizedClosures.FSharpFunc<_, _, _>.Adapt (f)) x t
+
+    let text rope = 
+        let arr = ResizeArray<char>()
+        fold (fun _ node -> 
+            for i in node.Char do
+                arr.Add i
+        ) () rope
+        new string(arr.ToArray())
+
     let inline private size node =
         match node with
         | E -> 0
@@ -19,6 +38,11 @@ module Rope =
         match node with 
         | E -> 0
         | T(_, _, v, _) -> v.LeftIdx
+
+    let inline private sizeRight node = 
+        match node with 
+        | E -> 0
+        | T(_, _, v, _) -> v.RightIdx
 
     /// O(1): Returns a boolean if tree is empty.
     let inline isEmpty node =
@@ -37,20 +61,20 @@ module Rope =
         | E -> 0
         | T(lvt, _, _, _) -> lvt
 
-    let inline private skew node =
+    let private skew node =
         match node with
-        | T(lvx, T(lvy, a, ky, b), kx, c) when lvx = lvy -> 
-            let innerVal = kx.SetIndex ky.RightIdx kx.RightIdx
+        | T(lvx, T(lvy, a, ky, b), kx, c) as t when lvx = lvy ->
+            let innerVal = kx.SetIndex (size b) (size c)
             let innerNode =  T(lvx, b, innerVal, c)
-            let outerVal = ky.SetRight (size innerNode)
+            let outerVal = ky.SetIndex (size a) (size innerNode)
             T(lvx, a, outerVal, innerNode)
         | t -> t
 
     let inline private split node =
         match node with
-        | T(lvx, a, kx, T(lvy, b, ky, T(lvz, c, kz, d))) when lvx = lvy && lvy = lvz -> 
+        | T(lvx, a, kx, T(lvy, b, ky, T(lvz, c, kz, d))) as t when lvx = lvy && lvy = lvz -> 
             let right = T(lvx, c, kz, d)
-            let leftVal = kx.SetRight ky.LeftIdx
+            let leftVal = kx.SetIndex (size a) (size b)
             let left = T(lvx, a, leftVal, b)
             let outerVal = ky.SetIndex (size left) (size right)
             T(lvx + 1, left, outerVal, right)
@@ -91,17 +115,6 @@ module Rope =
         | T(h, l, v, r) as node -> let (r', b) = splitMax r in adjust <| node, b
         | _ -> failwith "unexpected dellrg case"
 
-    let rec private foldOpt (f: OptimizedClosures.FSharpFunc<_, _, _>) x t =
-        match t with
-        | E -> x
-        | T(_, l, v, r) ->
-            let x = foldOpt f x l
-            let x = f.Invoke(x, v)
-            foldOpt f x r
-
-    let fold f x t =
-        foldOpt (OptimizedClosures.FSharpFunc<_, _, _>.Adapt (f)) x t
-
     let rec private insMin chr node =
         match node with
         | E -> T(1, E, RopeNode.create chr, E)
@@ -110,32 +123,46 @@ module Rope =
     let rec private insMax chr =
         function
         | E -> T(1, E, RopeNode.create chr, E)
-        | T(h, l, v, r) -> T(h, l, v.IncrRight(), insMax chr r) |> skew |> split
+        | T(h, l, v, r) -> T(h, l, v.IncrRight(), insMax chr r)
 
     (* Insert a char array. Private because a consumer would likely want to insert a string. *)
     let private insertChr insIndex chr rope =
         let rec ins curIndex node =
             match node with
             | E -> T(1, E, RopeNode.create chr, E)
-            | T(h, l, v, r) ->
+            | T(h, l, v, r) as node ->
                 if insIndex > curIndex then
-                    T(h, l, v.IncrRight(), ins (curIndex + 1) r) |> skew |> split
+                    let nextIndex = curIndex + 1 + sizeLeft r
+                    T(h, l, v.IncrRight(), ins nextIndex r) |> skew |> split
                 elif insIndex < curIndex then
-                    T(h, ins (curIndex - 2) l, v.IncrLeft(), r) |> skew |> split
+                    let nextIndex = curIndex - 1 - sizeRight l
+                    T(h, ins nextIndex l, v.IncrLeft(), r) |> skew |> split
                 else
                     (* We want to insert at the same index as this node. *)
-                    let l = insMax chr l
-                    T(h, l, v.IncrLeft(), r) |> skew |> split
+                    (* The problem is in the else case. *)
+                    printfn "\nbefore else: %s" <| text node
+                    let newLeft = insMax chr l
+                    let a = T(h, newLeft, v.IncrLeft(), r) |> skew //|> split
+                    printfn "after else: %s\n" <| text a
+                    a
 
         ins (sizeLeft rope) rope
 
     /// Inserts a string into a rope.
     let insert insIndex (str: string) rope =
         let enumerator = StringInfo.GetTextElementEnumerator(str)
+        printfn "\nnew insert call"
         let rec ins idxAcc ropeAcc = 
             if enumerator.MoveNext() then
                 let cur = enumerator.GetTextElement().ToCharArray()
+
+                if cur = [|'e'|] then 
+                    ()
+
+                printfn "inserting... %A" <| new string(cur)
                 let rope = insertChr idxAcc cur ropeAcc
+                let text = text rope
+                printfn "after ins: %A" text
                 ins (idxAcc + 1) rope
             else
                 ropeAcc
@@ -193,14 +220,6 @@ module Rope =
                     T(h, left, v.SetIndex (size left) (size right), right) |> adjust
 
         del (sizeLeft rope) rope
-
-    let text rope = 
-        let arr = ResizeArray<char>()
-        fold (fun _ node -> 
-            for i in node.Char do
-                arr.Add i
-        ) () rope
-        new string(arr.ToArray())
 
     type Rope with
         member this.Insert(index, str) = insert index str this
