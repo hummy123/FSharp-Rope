@@ -98,7 +98,6 @@ module Rope =
 
         del (sizeLeft rope) rope
 
-
     /// Returns a substring from the rope at the given start index and length.
     let substring (start: int) (length: int) rope =
         let finish = start + length
@@ -121,8 +120,28 @@ module Rope =
         sub (sizeLeft rope) rope
         new string(acc.ToArray())
 
+    let getLine (line: int) rope =
+        let acc = ResizeArray<char>()
+        let rec lin curLine node =
+            match node with
+            | E -> ()
+            | T(h, l, v, r) ->
+                if line < curLine
+                then lin (curLine - lineLength l - linesRight l) l
+
+                if line = curLine then 
+                    for i in v.Char do
+                        acc.Add i
+
+                if curLine > line
+                then lin (curLine + lineLength r + linesLeft r) r
+
+        lin (linesLeft rope) rope
+        new string(acc.ToArray())
+
     type Rope with
         member this.Insert(index, str) = insert index str this
         member this.Substring(startIndex, length) = substring startIndex length this
         member this.Delete(startIndex, length) = delete startIndex length this
         member this.Text() = text this
+        member this.GetLine line = getLine line this
