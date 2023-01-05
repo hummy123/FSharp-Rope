@@ -5,7 +5,7 @@ open Types
 module RopeNode =
     let inline create chr line = {
         Char = chr;
-        IsLine = line;
+        Lines = line;
         LeftIdx = 0;
         RightIdx = 0;
         LeftLns = 0;

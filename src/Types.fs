@@ -7,7 +7,7 @@ module Types =
         (* We are storing a char array because we want to represent grapheme clusters
          * as a single char. *)
         Char: char array;
-        IsLine: int;
+        Lines: int;
         LeftIdx: int;
         RightIdx: int;
         LeftLns: int;

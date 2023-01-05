@@ -72,31 +72,39 @@ module Rope =
     let delete (start: int) (length: int) rope =
         let finish = start + length
 
-        let rec del curIndex node =
+        let rec del curIndex delLines node =
             match node with
-            | E as empty -> empty
+            | E as empty -> empty, delLines
             | T(h, l, v, r) ->
-                let left = 
+                let (left, leftDel) = 
                     if start < curIndex
-                    then del (curIndex - 1 - sizeRight l) l
-                    else l
+                    then del (curIndex - 1 - sizeRight l) delLines l
+                    else l, 0
 
-                let right =
+                let (right, rightDel) =
                     if finish > curIndex
-                    then del (curIndex + 1 + sizeLeft r) r
-                    else r
+                    then del (curIndex + 1 + sizeLeft r) delLines r
+                    else r, 0
 
-                if start <= curIndex && finish > curIndex then 
+                if start <= curIndex && finish > curIndex then
+                    let delLines = delLines + v.Lines
                     if left = E
-                    then right
+                    then right, delLines + v.Lines
                     else 
-                        let (newLeft, newVal) = splitMax left
-                        let newVal = newVal.SetData (idxLnSize newLeft) (idxLnSize right)
-                        T(h, newLeft, newVal, right) |> adjust
+                        let (newLeft, newVal, leftDel) = splitMax leftDel left
+                        let leftIdx = sizeLeft newLeft
+                        let newVal = 
+                            { newVal with 
+                                LeftLns = newVal.LeftLns - leftDel;
+                                LeftIdx = leftIdx;
+                                RightIdx = size right;
+                                RightLns = lines right; }
+                        T(h, newLeft, newVal, right) |> adjust, delLines + v.Lines + leftDel + rightDel
                 else
-                    T(h, left, v.SetData (idxLnSize left) (idxLnSize right), right) |> adjust
+                    T(h, left, v.SetData (idxLnSize left) (idxLnSize right), right) |> adjust, leftDel + rightDel + delLines
 
-        del (sizeLeft rope) rope
+        let (tree, _) = del (sizeLeft rope) 0 rope
+        tree
 
     /// Returns a substring from the rope at the given start index and length.
     let substring (start: int) (length: int) rope =

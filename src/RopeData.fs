@@ -9,15 +9,20 @@ open Types
         | E -> 0
         | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1
 
+    let inline lines node =
+        match node with
+        | E -> 0
+        | T(_, _, v, _) -> v.LeftLns + v.RightLns + v.Lines
+
     let inline lineLength node = 
         match node with
         | E -> 0
-        | T(_, _, v, _) -> v.IsLine
+        | T(_, _, v, _) -> v.Lines
 
     let inline idxLnSize node =
         match node with
         | E -> 0, 0
-        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1, v.LeftLns + v.RightLns + v.IsLine
+        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1, v.LeftLns + v.RightLns + v.Lines
 
     let inline sizeLeft node = 
         match node with 
