@@ -3,11 +3,21 @@
 open Types
 
 module RopeNode =
-    let inline create chr = {
+    let inline create chr line = {
         Char = chr;
+        IsLine = line;
         LeftIdx = 0;
         RightIdx = 0;
+        LeftLns = 0;
+        RightLns = 0;
     }
+
+    let inline setMetadata leftIdx leftLns rightIdx rightLns node =
+        { node with
+            LeftIdx = leftIdx;
+            LeftLns = leftLns;
+            RightIdx = rightIdx;
+            RightLns = rightLns; }
 
     let inline setChar chr node =
         { node with Char = chr }
@@ -25,13 +35,16 @@ module RopeNode =
         { node with
             RightIdx = rightIdx; }
 
-    let inline incrLeft node = 
+    let inline incrLeft line node = 
         { node with
-            LeftIdx = node.LeftIdx + 1 }
+            LeftIdx = node.LeftIdx + 1;
+            LeftLns = node.LeftLns + line }
 
-    let inline incrRight node = 
+
+    let inline incrRight line node = 
         { node with 
-            RightIdx = node.RightIdx + 1 }
+            RightIdx = node.RightIdx + 1;
+            RightLns = node.RightLns + line }
 
     let inline decrLeft node = 
         { node with
@@ -42,11 +55,12 @@ module RopeNode =
             RightIdx = node.RightIdx - 1 }
 
     type RopeNode with
-        member this.SetIndex leftIdx rightIdx = setIndex leftIdx rightIdx this
-        member this.SetRight rightIdx = setRight rightIdx this
-        member this.SetLeft leftIdx = setLeft leftIdx this
-        member this.IncrLeft() = incrLeft this
-        member this.IncrRight() = incrRight this
-        member this.DecrLeft() = decrLeft this
-        member this.DecrRight() = decrRight this
-        member this.SetChar chr = setChar chr this
+        member inline this.SetIndex leftIdx rightIdx = setIndex leftIdx rightIdx this
+        member inline this.SetRight rightIdx = setRight rightIdx this
+        member inline this.SetLeft leftIdx = setLeft leftIdx this
+        member inline this.PlusLeft line = incrLeft line this
+        member inline this.PlusRight line = incrRight line this
+        member inline this.DecrLeft() = decrLeft this
+        member inline this.DecrRight() = decrRight this
+        member inline this.SetChar chr = setChar chr this
+        member inline this.SetData (leftIdx, leftLns) (rightIdx, rightLns) = setMetadata leftIdx leftLns rightIdx rightLns this
