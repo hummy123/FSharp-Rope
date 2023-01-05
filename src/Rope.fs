@@ -142,7 +142,7 @@ module Rope =
                         acc.Add i
 
                 if line >= curLine
-                then lin (curLine + lineLength r + linesLeft r) r
+                then lin (curLine + v.Lines + linesLeft r) r
 
         lin (linesLeft rope) rope
         new string(acc.ToArray())
