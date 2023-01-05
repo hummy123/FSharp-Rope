@@ -14,8 +14,4 @@ let initialTable = Rope.create text
 module Program =
     [<EntryPoint>]
     let main _ =  
-        let rope = Rope.create "0\n123\n46\n89"
-        for i in [0..0] do
-            let line = Rope.getLine 0 rope
-            printfn "%A" line
         0
