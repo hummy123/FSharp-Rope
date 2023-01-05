@@ -130,7 +130,7 @@ module Rope =
         let rec ins curIndex node =
             match node with
             | E -> T(1, E, RopeNode.create chr, E)
-            | T(h, l, v, r) as node ->
+            | T(h, l, v, r) ->
                 if insIndex > curIndex then
                     let nextIndex = curIndex + 1 + sizeLeft r
                     T(h, l, v.IncrRight(), ins nextIndex r) |> skew |> split
@@ -139,30 +139,18 @@ module Rope =
                     T(h, ins nextIndex l, v.IncrLeft(), r) |> skew |> split
                 else
                     (* We want to insert at the same index as this node. *)
-                    (* The problem is in the else case. *)
-                    printfn "\nbefore else: %s" <| text node
                     let newLeft = insMax chr l
-                    let a = T(h, newLeft, v.IncrLeft(), r) |> skew //|> split
-                    printfn "after else: %s\n" <| text a
-                    a
+                    T(h, newLeft, v.IncrLeft(), r) |> skew |> split
 
         ins (sizeLeft rope) rope
 
     /// Inserts a string into a rope.
     let insert insIndex (str: string) rope =
         let enumerator = StringInfo.GetTextElementEnumerator(str)
-        printfn "\nnew insert call"
         let rec ins idxAcc ropeAcc = 
             if enumerator.MoveNext() then
                 let cur = enumerator.GetTextElement().ToCharArray()
-
-                if cur = [|'e'|] then 
-                    ()
-
-                printfn "inserting... %A" <| new string(cur)
                 let rope = insertChr idxAcc cur ropeAcc
-                let text = text rope
-                printfn "after ins: %A" text
                 ins (idxAcc + 1) rope
             else
                 ropeAcc
@@ -180,14 +168,14 @@ module Rope =
             | E -> ()
             | T(h, l, v, r) ->
                 if start < curIndex
-                then sub (curIndex - 2) l
+                then sub (curIndex - 1 - sizeRight l) l
 
-                if start <= curIndex && finish >= curIndex then 
+                if start <= curIndex && finish > curIndex then 
                     for i in v.Char do
                         acc.Add i
 
                 if finish > curIndex
-                then sub (curIndex + 1) r
+                then sub (curIndex + 1 + sizeLeft r) r
 
         sub (sizeLeft rope) rope
         new string(acc.ToArray())
@@ -202,15 +190,15 @@ module Rope =
             | T(h, l, v, r) ->
                 let left = 
                     if start < curIndex
-                    then del (curIndex - 2) l
+                    then del (curIndex - 1 - sizeRight l) l
                     else l
 
                 let right =
                     if finish > curIndex
-                    then del (curIndex + 1) r
+                    then del (curIndex + 1 + sizeLeft r) r
                     else r
 
-                if start <= curIndex && finish >= curIndex then 
+                if start <= curIndex && finish > curIndex then 
                     if left = E
                     then right
                     else 
