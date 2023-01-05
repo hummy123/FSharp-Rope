@@ -137,12 +137,11 @@ module Rope =
                 if line <= curLine
                 then lin (curLine - lineLength l - linesRight l) l
 
-                //printfn "%s" <| new string(v.Char)
                 if line = curLine then 
                     for i in v.Char do
                         acc.Add i
 
-                if curLine >= line
+                if line >= curLine
                 then lin (curLine + lineLength r + linesLeft r) r
 
         lin (linesLeft rope) rope
