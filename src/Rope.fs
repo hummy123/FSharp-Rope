@@ -204,6 +204,7 @@ module Rope =
                     then right
                     else 
                         let (newLeft, newVal) = splitMax left
+                        let newVal = newVal.SetIndex (size newLeft) (size right)
                         T(h, newLeft, newVal, right) |> adjust
                 else
                     T(h, left, v.SetIndex (size left) (size right), right) |> adjust
