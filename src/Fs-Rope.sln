@@ -7,6 +7,8 @@ Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FsRope", "FsRope.fsproj", "
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsRopeBenchmarks", "..\FsRopeBenchmarks\FsRopeBenchmarks.fsproj", "{09113F20-812C-415A-AA2E-4884D72E6DEE}"
 EndProject
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "RopeTests", "..\test\RopeTests.fsproj", "{E6539234-1ECC-46ED-892D-077AB9173A0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{09113F20-812C-415A-AA2E-4884D72E6DEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09113F20-812C-415A-AA2E-4884D72E6DEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09113F20-812C-415A-AA2E-4884D72E6DEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6539234-1ECC-46ED-892D-077AB9173A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6539234-1ECC-46ED-892D-077AB9173A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6539234-1ECC-46ED-892D-077AB9173A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6539234-1ECC-46ED-892D-077AB9173A0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

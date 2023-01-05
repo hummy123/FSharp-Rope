@@ -194,7 +194,16 @@ module Rope =
 
         del (sizeLeft rope) rope
 
+    let text rope = 
+        let arr = ResizeArray<char>()
+        fold (fun _ node -> 
+            for i in node.Char do
+                arr.Add i
+        ) () rope
+        new string(arr.ToArray())
+
     type Rope with
         member this.Insert(index, str) = insert index str this
         member this.Substring(startIndex, length) = substring startIndex length this
         member this.Delete(startIndex, length) = delete startIndex length this
+        member this.Text() = text this
