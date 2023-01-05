@@ -109,11 +109,15 @@ module Rope =
             T(lva + 1, leftNode, outerVal, rightNode)
         | _ -> failwith "unexpected adjust case"
 
+    (* There is an error in this splitMax case for some reason. *)
     let rec private splitMax =
         function
-        | T(_, l, v, E) -> (l, v)
-        | T(h, l, v, r) as node -> 
-            let (r', b) = splitMax r in adjust <| node, b
+        | T(_, l, v, E) -> (l, v.SetIndex (size l) 0)
+        | T(h, l, v, r) -> 
+            let a, r =
+                match splitMax r with
+                | n, b -> adjust n, b
+            a, r
         | _ -> failwith "unexpected dellrg case"
 
     let rec private insMin chr node =
@@ -202,6 +206,8 @@ module Rope =
                 if start <= curIndex && finish > curIndex then 
                     if left = E
                     then right
+                    elif left = E && right = E
+                    then E
                     else 
                         let (newLeft, newVal) = splitMax left
                         let newVal = newVal.SetIndex (size newLeft) (size right)
