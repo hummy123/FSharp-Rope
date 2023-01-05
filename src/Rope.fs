@@ -92,18 +92,18 @@ module Rope =
         | T(lvt, lt, kt, rt) when lvl rt < lvt - 1 && sngl lt -> 
             T(lvt - 1, lt, kt, rt) |> skew
         | T(lvt, T(lv1, a, kl, T(lvb, lb, kb, rb)), kt, rt) when lvl rt < lvt - 1 -> 
-            let leftVal = kl.SetRight kb.LeftIdx
+            let leftVal = kl.SetIndex (size a) (size lb)
             let leftNode = T(lv1, a, leftVal, lb)
-            let rightVal = kt.SetIndex kb.RightIdx kt.RightIdx
+            let rightVal = kt.SetIndex (size rb) (size rt)
             let rightNode = T(lvt - 1, rb, rightVal, rt)
             let outerVal = kb.SetIndex (size leftNode) (size rightNode)
             T(lvb + 1, leftNode, outerVal, rightNode)
         | T(lvt, lt, kt, rt) when lvl rt < lvt -> 
             T(lvt - 1, lt, kt, rt) |> split
         | T(lvt, lt, kt, T(lvr, (T(lva, c, ka, d) as a), kr, b)) ->
-            let leftVal = kt.SetRight ka.LeftIdx
+            let leftVal = kt.SetIndex (size lt) (size c)
             let leftNode = T(lvt - 1, lt, leftVal, c)
-            let rightVal = kr.SetLeft ka.RightIdx
+            let rightVal = kr.SetIndex (size d) (size b)
             let rightNode = T(nlvl a, d, rightVal, b) |> split
             let outerVal = ka.SetIndex (size leftNode) (size rightNode)
             T(lva + 1, leftNode, outerVal, rightNode)
@@ -112,7 +112,8 @@ module Rope =
     let rec private splitMax =
         function
         | T(_, l, v, E) -> (l, v)
-        | T(h, l, v, r) as node -> let (r', b) = splitMax r in adjust <| node, b
+        | T(h, l, v, r) as node -> 
+            let (r', b) = splitMax r in adjust <| node, b
         | _ -> failwith "unexpected dellrg case"
 
     let rec private insMin chr node =
