@@ -134,14 +134,15 @@ module Rope =
             match node with
             | E -> ()
             | T(h, l, v, r) ->
-                if line < curLine
+                if line <= curLine
                 then lin (curLine - lineLength l - linesRight l) l
 
+                //printfn "%s" <| new string(v.Char)
                 if line = curLine then 
                     for i in v.Char do
                         acc.Add i
 
-                if curLine > line
+                if curLine >= line
                 then lin (curLine + lineLength r + linesLeft r) r
 
         lin (linesLeft rope) rope
