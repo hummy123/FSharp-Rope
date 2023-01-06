@@ -2,7 +2,7 @@
 
 open Types
 
-module RopeNode =
+module internal RopeNode =
     let inline create chr line = {
         Char = chr;
         Lines = line;

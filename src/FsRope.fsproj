@@ -11,6 +11,7 @@
     <Compile Include="RopeNode.fs" />
     <Compile Include="RopeData.fs" />
     <Compile Include="AaTree.fs" />
+    <Compile Include="RopeTree.fs" />
     <Compile Include="Rope.fs" />
   </ItemGroup>
 

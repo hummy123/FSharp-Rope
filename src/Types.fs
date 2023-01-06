@@ -15,9 +15,15 @@ module Types =
     }
 
    /// A Rope is a data structure for efficiently storing and manipulating text.
-    type Rope =
+    type RopeTree =
         | E
-        | T of int * Rope * RopeNode * Rope
+        | T of int * RopeTree * RopeNode * RopeTree
+
+    type Rope = {
+        Tree: RopeTree;
+        TextLength: int;
+        LineCount: int;
+    }
 
     (* A small optimisation attempt to get around branch prediction.
      * If we are inserting a character with a line, add 1; else add 0. *)
