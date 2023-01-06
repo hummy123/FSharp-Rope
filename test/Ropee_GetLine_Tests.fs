@@ -41,4 +41,16 @@ let ``Rope.GetLine returns correct segments when we delete line breaks in comple
     Assert.Equal("consecteturadipiscing elit. \n", rope.GetLine 1)
     Assert.Equal("Aenean ornare, lacus vitae \n", rope.GetLine 2)
     
-    // The above tests are enough to give me confidence in the code. 
+    // The above tests are enough to give me confidence in the GetLine function. 
+
+
+[<Fact>]
+let ``Ro00pe.GetLine returns correct segments when we delete line breaks in  string`` () =
+    let rope = Rope.create "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
+    // There is a bug below. Find out and fix it.
+
+    // Delete first line break and see if we can get expected string from result.
+    let rope = rope.Delete(11, 2)
+    Assert.Equal("Lorem ipsumconsecteturadipiscing elit. \n", rope.Substring(0, 1))
+
+    
