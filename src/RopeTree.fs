@@ -63,7 +63,7 @@ module internal RopeTree =
                         let (newLeft, newVal, leftDel) = splitMax leftDel left
                         let newVal = 
                             { newVal with 
-                                LeftLns = newVal.LeftLns - leftDel;
+                                LeftLns = lines newLeft;
                                 LeftIdx = size newLeft;
                                 RightIdx = size right;
                                 RightLns = lines right; }
