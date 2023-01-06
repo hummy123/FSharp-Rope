@@ -46,25 +46,12 @@ module Rope =
     /// Creates a Rope with the specified string.
     let create str = insert 0 str empty
 
-#if DEBUG
-    /// Returns a string containing all of the rope's text in O(n) time.
-    /// Used exclusively for testing. 
-    /// More performant queries can be made with the getLine and substring functions.
-    let text rope = 
-        let arr = ResizeArray<char>()
-        fold (fun _ node -> 
-            for i in node.Char do
-                arr.Add i
-        ) () rope.Tree
-        new string(arr.ToArray())
-#endif
-
     type Rope with
         member this.Insert(index, string) = insert index string this
         member this.Delete(startIndex, length) = delete startIndex length this
         member this.Substring(startIndex, length) = substring startIndex length this
         member this.GetLine lineNumber = getLine lineNumber this
-
+        member this.IndicesOf string = indicesOf string this
 #if DEBUG
         member this.Text() = text this
 #endif

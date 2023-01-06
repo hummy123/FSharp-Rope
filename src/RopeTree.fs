@@ -116,3 +116,29 @@ module internal RopeTree =
 
         lin (linesLeft rope) rope
         new string(acc.ToArray())
+
+    /// Returns a .NET List containing the indices of the given string.
+    /// If the given string wasn't found, returns an empty list.
+    let indicesOf string rope =
+        let startChar = StringInfo.GetNextTextElement(string).ToCharArray()
+        let strLength = StringInfo(string).LengthInTextElements
+        let acc = ResizeArray<int>()
+
+        fold (fun pos node -> 
+            if node.Char = startChar && substring pos strLength rope.Tree = string then
+                acc.Add pos
+            pos + 1
+        ) 0 rope.Tree |> ignore
+        
+        acc
+
+    /// Returns a string containing all of the rope's text in O(n) time.
+    /// Used exclusively for testing. 
+    /// More performant queries can be made with the getLine and substring functions.
+    let text rope = 
+        let arr = ResizeArray<char>()
+        fold (fun _ node -> 
+            for i in node.Char do
+                arr.Add i
+        ) () rope.Tree
+        new string(arr.ToArray())
