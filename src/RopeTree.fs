@@ -61,11 +61,10 @@ module internal RopeTree =
                     then right, delLines + v.Lines
                     else 
                         let (newLeft, newVal, leftDel) = splitMax leftDel left
-                        let leftIdx = sizeLeft newLeft
                         let newVal = 
                             { newVal with 
                                 LeftLns = newVal.LeftLns - leftDel;
-                                LeftIdx = leftIdx;
+                                LeftIdx = size newLeft;
                                 RightIdx = size right;
                                 RightLns = lines right; }
                         T(h, newLeft, newVal, right) |> adjust, delLines + v.Lines + leftDel + rightDel

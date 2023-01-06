@@ -75,7 +75,7 @@ open RopeData
                     LeftIdx = size l; 
                     LeftLns = lines l; 
                     RightIdx = 0; 
-                    RightLns = 0;}
+                    RightLns = 0; }
             l, v, v.Lines + delLines
         | T(h, l, v, r) -> 
             let (r', b, lns) = splitMax (delLines + v.Lines) r
