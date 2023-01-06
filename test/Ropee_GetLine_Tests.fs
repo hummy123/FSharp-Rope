@@ -41,9 +41,6 @@ let ``Rope.GetLine returns correct segments when we delete line breaks in comple
     Assert.Equal("consecteturadipiscing elit. \n", rope.GetLine 1)
     Assert.Equal("Aenean ornare, lacus vitae \n", rope.GetLine 2)
     
-    // The above tests are enough to give me confidence in the GetLine function. 
-
-
 [<Fact>]
 let ``Rope.GetLine returns correct segments when we delete multiple line breaks at first half`` () =
     let rope = Rope.create "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
@@ -70,3 +67,28 @@ let ``Rope.GetLine returns correct segments when we delete multiple line breaks 
     Assert.Equal("ipsum. Cras condimentum\n", rope.GetLine 5)
     Assert.Equal("purus in metus \n", rope.GetLine 6)
     Assert.Equal("sodales tincidunt. Praesent", rope.GetLine 7)
+
+[<Fact>]
+let ``Rope.GetLine returns correct segments when we delete multiple line breaks at last half`` () =
+    let rope = Rope.create "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
+
+    // delete "\npurus in metus \n"
+    let rope = rope.Delete(177, 17)
+    Assert.Equal("ipsum. Cras condimentumsodales tincidunt. Praesent", rope.GetLine 10)
+
+    // delete " elit,\nin "
+    let rope = rope.Delete(123, 9)
+    Assert.Equal("sollicitudin ultrices mi dui et\n", rope.GetLine 8)
+
+    // delete "\ntempor pretium,\nleo nulla"
+    let rope = rope.Delete(83, 25)
+
+    // assert that all lines are as expected
+    Assert.Equal("Lorem ipsum\n", rope.GetLine 0)
+    Assert.Equal("dolor sit amet,\n", rope.GetLine 1)
+    Assert.Equal("consectetur\n", rope.GetLine 2)
+    Assert.Equal("adipiscing elit. \n", rope.GetLine 3)
+    Assert.Equal("Aenean ornare, \n", rope.GetLine 4)
+    Assert.Equal("lacus vitulla\n", rope.GetLine 5)
+    Assert.Equal("sollicitudin ultrices mi dui et\n", rope.GetLine 6)
+    Assert.Equal("ipsum. Cras condimentumsodales tincidunt. Praesent", rope.GetLine 7)
