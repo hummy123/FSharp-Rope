@@ -46,6 +46,10 @@ module Rope =
     /// Creates a Rope with the specified string.
     let create str = insert 0 str empty
 
+#if DEBUG
+    let text = text
+#endif
+
     type Rope with
         member this.Insert(index, string) = insert index string this
         member this.Delete(startIndex, length) = delete startIndex length this
