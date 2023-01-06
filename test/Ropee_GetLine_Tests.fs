@@ -31,12 +31,12 @@ let ``Rope.GetLine returns correct segments when we delete line breaks in comple
     Assert.Equal("consectetur\n", rope.GetLine 1)
 
     // Delete third line break.
-    let rope = rope.Delete(36, 1)
+    let rope = rope.Delete(38, 1)
     Assert.Equal("Lorem ipsumdolor sit amet,\n", rope.GetLine 0)
     Assert.Equal("consecteturadipiscing elit. \n", rope.GetLine 1)
 
     // Delete fifth line break
-    let rope = rope.Delete(64, 1)
+    let rope = rope.Delete(71, 1)
     Assert.Equal("Lorem ipsumdolor sit amet,\n", rope.GetLine 0)
     Assert.Equal("consecteturadipiscing elit. \n", rope.GetLine 1)
     Assert.Equal("Aenean ornare, lacus vitae \n", rope.GetLine 2)
@@ -45,12 +45,28 @@ let ``Rope.GetLine returns correct segments when we delete line breaks in comple
 
 
 [<Fact>]
-let ``Ro00pe.GetLine returns correct segments when we delete line breaks in  string`` () =
+let ``Rope.GetLine returns correct segments when we delete multiple line breaks at first half`` () =
     let rope = Rope.create "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
-    // There is a bug below. Find out and fix it.
+    // delete "\ndolor sit amet,\n"
+    let rope = rope.Delete(11, 17)
+    Assert.Equal("Lorem ipsumconsectetur\n", rope.GetLine 0)
+    Assert.Equal("adipiscing elit. \n", rope.GetLine 1)
 
-    // Delete first line break and see if we can get expected string from result.
-    let rope = rope.Delete(11, 2)
-    Assert.Equal("Lorem ipsumconsecteturadipiscing elit. \n", rope.Substring(0, 1))
+    // current state of string after above deletion: 
+    // "Lorem ipsumconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
 
-    
+    // delete "\nlacus vitae \ntempor pretium,\n"
+    let rope = rope.Delete(57, 30)
+    // previos assertions to check they still work
+    Assert.Equal("Lorem ipsumconsectetur\n", rope.GetLine 0)
+    Assert.Equal("adipiscing elit. \n", rope.GetLine 1)
+
+    // current assertion
+    Assert.Equal("Aenean ornare, leo nulla\n", rope.GetLine 2)
+
+    // assertions for lines after to check they still work as expected
+    Assert.Equal("sollicitudin elit,\n", rope.GetLine 3)
+    Assert.Equal("in ultrices mi dui et\n", rope.GetLine 4)
+    Assert.Equal("ipsum. Cras condimentum\n", rope.GetLine 5)
+    Assert.Equal("purus in metus \n", rope.GetLine 6)
+    Assert.Equal("sodales tincidunt. Praesent", rope.GetLine 7)
