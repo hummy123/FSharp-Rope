@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsRopeBenchmarks", "FsRopeBenchmarks\FsRopeBenchmarks.fsproj", "{8D7CB53B-D6A5-4564-B13F-CA1FBF45861D}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsRope", "src\FsRope.fsproj", "{F375E6FF-4FFF-4109-86E5-68EAC02D1A72}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "RopeTests", "test\RopeTests.fsproj", "{194C3133-5E20-459C-BE25-DBD6DE91EFE5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D7CB53B-D6A5-4564-B13F-CA1FBF45861D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7CB53B-D6A5-4564-B13F-CA1FBF45861D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7CB53B-D6A5-4564-B13F-CA1FBF45861D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7CB53B-D6A5-4564-B13F-CA1FBF45861D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F375E6FF-4FFF-4109-86E5-68EAC02D1A72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F375E6FF-4FFF-4109-86E5-68EAC02D1A72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F375E6FF-4FFF-4109-86E5-68EAC02D1A72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F375E6FF-4FFF-4109-86E5-68EAC02D1A72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{194C3133-5E20-459C-BE25-DBD6DE91EFE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{194C3133-5E20-459C-BE25-DBD6DE91EFE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{194C3133-5E20-459C-BE25-DBD6DE91EFE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{194C3133-5E20-459C-BE25-DBD6DE91EFE5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
