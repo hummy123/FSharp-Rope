@@ -29,17 +29,23 @@ open Types
         | E -> 0
         | T(_, _, v, _) -> v.LeftIdx
 
-    let inline linesLeft node =
-        match node with
-        | E -> 0
-        | T(_, _, v, _) -> v.LeftLns
 
     let inline sizeRight node = 
         match node with 
         | E -> 0
         | T(_, _, v, _) -> v.RightIdx
 
+    let rec traverseLines = function
+        | E -> 0
+        | T(_, l, v, r) -> traverseLines l + v.Lines + traverseLines r
+
+
     let inline linesRight node =
         match node with
         | E -> 0
-        | T(_, _, v, _) -> v.RightLns
+        | T(_, _, v, r) -> traverseLines r
+
+    let inline linesLeft node =
+        match node with
+        | E -> 0
+        | T(_, l, v, _) -> traverseLines l

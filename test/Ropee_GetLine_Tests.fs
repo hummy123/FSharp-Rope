@@ -98,11 +98,11 @@ let ``Rope.GetLine returns correct segments when we delete multiple line breaks 
     let rope = Rope.create "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
 
     // delete "Aenean ornare, \n"
-    //let rope = rope.Delete(58, 16)
+    let rope = rope.Delete(58, 16)
     // delete "tempor pretium,\nleo nulla\n"
-    //let rope = rope.Delete(69, 15)
+    let rope = rope.Delete(69, 15)
     //delete "dolor sit amet,\n"
-    let rope = rope.Delete(12, 4)
+    let rope = rope.Delete(12, 16)
     
     // test we retrieve all lines as expected
     Assert.Equal("Lorem ipsum\n", rope.GetLine 0)
@@ -113,4 +113,5 @@ let ``Rope.GetLine returns correct segments when we delete multiple line breaks 
     Assert.Equal("sollicitudin elit,\n", rope.GetLine 5)
     Assert.Equal("in ultrices mi dui et\n", rope.GetLine 6)
     Assert.Equal("ipsum. Cras condimentum\n", rope.GetLine 7)
-    Assert.Equal("sodales tincidunt. Praesent\n", rope.GetLine 8)
+    Assert.Equal("purus in metus \n", rope.GetLine 8)
+    Assert.Equal("sodales tincidunt. Praesent", rope.GetLine 9)
