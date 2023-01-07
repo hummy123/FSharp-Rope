@@ -56,3 +56,27 @@ let ``String and rope return same substring after a series of inserts`` () =
         let ropeSub = testRope.Substring(startIdx, length)
 
         Assert.Equal(strSub, ropeSub)
+
+[<Property>]
+let ``String and rope return same line after a series of newline inserts`` () =
+    let mutable testString = initString
+    let mutable testRope = initRope
+
+    for i in [0..20] do
+        // Generate inputs
+        let insStr = "\n"
+        let idx = idxGen testString.Length
+        testString <- testString.Insert(idx, insStr)
+        testRope <- testRope.Insert(idx, insStr)
+
+        // Split strings by \n so we get number of lines.
+        let spliString = testString.Split("\n")
+
+        // Loop over every line number and check if they are same in both.
+        // We add \n to the plain string version because we split by \n before.
+        for i in [0..spliString.Length - 2] do
+            Assert.Equal(spliString[i] + "\n", testRope.GetLine i)
+
+        // Test last line is same in both.
+        let lastLineNum = spliString.Length - 1
+        Assert.Equal(spliString[lastLineNum], testRope.GetLine lastLineNum)
