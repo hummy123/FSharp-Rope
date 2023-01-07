@@ -67,7 +67,7 @@ open RopeData
             T(lva + 1, leftNode, outerVal, rightNode)
         | _ -> failwith "unexpected adjust case"
 
-    let rec splitMax delLine =
+    let rec splitMax =
         function
         | T(_, l, v, E) -> 
             let v = 
@@ -78,7 +78,7 @@ open RopeData
                     RightLns = 0; }
             l, v, 0
         | T(h, l, v, r) -> 
-            match splitMax delLine r with
+            match splitMax r with
             | r', b, lns -> 
                 let v' = { v with RightLns = lines r' }
                 T(h, l, v', r') |> adjust, b, lns

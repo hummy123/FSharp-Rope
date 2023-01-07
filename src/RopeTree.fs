@@ -60,7 +60,7 @@ module internal RopeTree =
                     if left = E
                     then right, delLines
                     else 
-                        let (newLeft, newVal, _) = splitMax v.Lines left
+                        let (newLeft, newVal, _) = splitMax left
                         let newVal = 
                             { newVal with 
                                 LeftLns = lines newLeft;
