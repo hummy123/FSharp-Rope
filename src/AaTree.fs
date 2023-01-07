@@ -76,9 +76,9 @@ open RopeData
                     LeftLns = lines l; 
                     RightIdx = 0; 
                     RightLns = 0; }
-            l, v, v.Lines + delLines
+            l, v, 0
         | T(h, l, v, r) -> 
-            let (r', b, lns) = splitMax (delLines + v.Lines) r
+            let (r', b, lns) = splitMax 0 r
             in adjust <| T(h, l, v, r'), b, lns
         | _ -> failwith "unexpected splitMax case"
 
