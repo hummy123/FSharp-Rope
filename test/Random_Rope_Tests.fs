@@ -13,29 +13,33 @@ let initRope = Rope.create lorem
 let initString = lorem
 
 // Generators
-let charGen = Gen.sample 100 100 Arb.generate<char> |> Array.ofList
+let charGen = 
+    let chars = Gen.sample 100 100 Arb.generate<char> |> Array.ofList
+    new string(chars)
+
 let idxGen maxLen = Gen.choose(0, maxLen) |> Gen.sample 1 1 |> List.head
 let lengthGen min max = Gen.choose(min, max) |> Gen.sample 1 1 |> List.head
 
 // Property tests
-[<Property>]
+[<Property>] (* This test may crash because of a stack overflow. Adapt code to CPS. *)
 let ``String and rope return same text after a series of inputs`` () =
     let mutable testString = initString
     let mutable testRope = initRope
     for i in [0..100] do
-        let insStr = new string(charGen)
+        let insStr = charGen
         let idx = idxGen insStr.Length
         testString <- testString.Insert(idx, insStr)
         testRope <- testRope.Insert(idx, insStr)
         Assert.Equal(testString, testRope.Text())
 
 [<Property>]
-let ``String and rope return same substring after a series of inputs`` () =
+let ``String and rope return same substring after a series of inserts`` () =
     let mutable testString = initString
     let mutable testRope = initRope
+
     for i in [0..100] do
         // Generate inputs
-        let insStr = new string(charGen)
+        let insStr = charGen
         let idx = idxGen testString.Length
         testString <- testString.Insert(idx, insStr)
         testRope <- testRope.Insert(idx, insStr)
