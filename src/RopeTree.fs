@@ -58,16 +58,16 @@ module internal RopeTree =
                 if start <= curIndex && finish > curIndex then
                     let delLines = delLines + v.Lines
                     if left = E
-                    then right, delLines + v.Lines
+                    then right, delLines
                     else 
-                        let (newLeft, newVal, _) = splitMax leftDel left
+                        let (newLeft, newVal, _) = splitMax v.Lines left
                         let newVal = 
                             { newVal with 
                                 LeftLns = lines newLeft;
                                 LeftIdx = size newLeft;
                                 RightIdx = size right;
                                 RightLns = lines right; }
-                        T(h, newLeft, newVal, right) |> adjust, delLines + v.Lines + leftDel + rightDel
+                        T(h, newLeft, newVal, right) |> adjust, delLines + leftDel + rightDel
                 else
                     T(h, left, v.SetData (idxLnSize left) (idxLnSize right), right) |> adjust, leftDel + rightDel + delLines
 

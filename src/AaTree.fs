@@ -67,7 +67,7 @@ open RopeData
             T(lva + 1, leftNode, outerVal, rightNode)
         | _ -> failwith "unexpected adjust case"
 
-    let rec splitMax delLines =
+    let rec splitMax delLine =
         function
         | T(_, l, v, E) -> 
             let v = 
@@ -78,8 +78,10 @@ open RopeData
                     RightLns = 0; }
             l, v, 0
         | T(h, l, v, r) -> 
-            let (r', b, lns) = splitMax 0 r
-            in adjust <| T(h, l, v, r'), b, lns
+            match splitMax delLine r with
+            | r', b, lns -> 
+                let v' = { v with RightLns = lines r' }
+                T(h, l, v', r') |> adjust, b, lns
         | _ -> failwith "unexpected splitMax case"
 
     let rec foldOpt (f: OptimizedClosures.FSharpFunc<_, _, _>) x t =
