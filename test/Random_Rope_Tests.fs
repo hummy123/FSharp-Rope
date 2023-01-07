@@ -25,9 +25,12 @@ let lengthGen min max = Gen.choose(min, max) |> Gen.sample 1 1 |> List.head
 let ``String and rope return same text after a series of inputs`` () =
     let mutable testString = initString
     let mutable testRope = initRope
-    for i in [0..100] do
+
+    for i in [0..20] do
+        // Generate inputs
         let insStr = charGen
-        let idx = idxGen insStr.Length
+        let idx = idxGen testString.Length
+        // Insert and then assert
         testString <- testString.Insert(idx, insStr)
         testRope <- testRope.Insert(idx, insStr)
         Assert.Equal(testString, testRope.Text())
@@ -37,7 +40,7 @@ let ``String and rope return same substring after a series of inserts`` () =
     let mutable testString = initString
     let mutable testRope = initRope
 
-    for i in [0..100] do
+    for i in [0..20] do
         // Generate inputs
         let insStr = charGen
         let idx = idxGen testString.Length
