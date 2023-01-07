@@ -1,4 +1,4 @@
-module TextTableInsertTests
+module RopeInsertTests
 
 open System
 open Xunit

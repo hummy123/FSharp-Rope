@@ -1,4 +1,4 @@
-﻿module TextTableDeleteTests
+﻿module RopeDeleteTests
 
 open System
 open Xunit
