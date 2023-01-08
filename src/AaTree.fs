@@ -65,7 +65,7 @@ open RopeData
             let rightNode = T(nlvl a, d, rightVal, b) |> split
             let outerVal = ka.SetData (idxLnSize leftNode) (idxLnSize rightNode)
             T(lva + 1, leftNode, outerVal, rightNode)
-        | _ -> failwith "unexpected adjust case"
+        | _ -> node
 
     let rec splitMax =
         function
