@@ -19,7 +19,7 @@ module internal RopeTree =
         | T(h, l, v, r) -> T(h, l, v.PlusRight line, insMax chr line r)
 
     /// Inserts a char array into the rope at the specified index.
-    let insertChr insIndex chr line rope =
+    let inline insertChr insIndex chr line rope =
         let rec ins curIndex node cont =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
@@ -128,7 +128,7 @@ module internal RopeTree =
     /// Returns a .NET List containing the indices of the given string.
     /// If the given string wasn't found, returns an empty list.
     let indicesOf string rope =
-        let startChar = StringInfo.GetNextTextElement(string).ToCharArray()
+        let startChar = StringInfo.GetNextTextElement(string)
         let strLength = StringInfo(string).LengthInTextElements
         let acc = ResizeArray<int>()
 

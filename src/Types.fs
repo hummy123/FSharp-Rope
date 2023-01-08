@@ -6,7 +6,7 @@ module Types =
     type RopeNode = {
         (* We are storing a char array because we want to represent grapheme clusters
          * as a single char. *)
-        Char: char array;
+        Char: string;
         Lines: int;
         LeftIdx: int;
         RightIdx: int;

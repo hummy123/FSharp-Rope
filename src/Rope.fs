@@ -14,6 +14,7 @@ module Rope =
     /// Returns a Rope with the string inserted.
     let insert insIndex (str: string) rope =
         let enumerator = StringInfo.GetTextElementEnumerator(str)
+        let chars = ResizeArray()
         let rec ins idxAcc ropeAcc = 
             if enumerator.MoveNext() then
                 let cur = enumerator.GetTextElement()
@@ -22,7 +23,7 @@ module Rope =
                         if cur.Contains("\n") || cur.Contains("\r")
                         then HasLine
                         else HasNoLine
-                    let cur = cur.ToCharArray()
+                    //let cur = cur.ToCharArray()
                     let rope = insertChr idxAcc cur line ropeAcc
                     ins (idxAcc + 1) rope
                 else
