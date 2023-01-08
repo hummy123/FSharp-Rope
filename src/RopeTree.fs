@@ -20,29 +20,31 @@ module internal RopeTree =
 
     /// Inserts a char array into the rope at the specified index.
     let insertChr insIndex chr line rope =
-        let rec ins curIndex node =
+        let rec ins curIndex node cont =
             match node with
-            | E -> T(1, E, RopeNode.create chr line, E)
+            | E -> T(1, E, RopeNode.create chr line, E) |> cont
             | T(h, l, v, r) when insIndex > curIndex ->
                 let nextIndex = curIndex + 1 + sizeLeft r
                 let v' = v.PlusRight line
-                let r' = ins nextIndex r
-                let t = T(h, l, v', r') 
-                t |> skew |> split
+                ins nextIndex r (fun r' -> 
+                    T(h, l, v', r') 
+                    |> skew |> split |> cont
+                )
             | T(h, l, v, r) when insIndex < curIndex ->
                 let nextIndex = curIndex - 1 - sizeRight l
                 let v' = v.PlusLeft line
-                let l' = ins nextIndex l
-                let t = T(h, l', v', r) 
-                t |> skew |> split
+                ins nextIndex l (fun l' ->
+                    T(h, l', v', r) 
+                    |> skew |> split |> cont
+                )
             | T(h, l, v, r) ->
                 (* We want to insert at the same index as this node. *)
                 let l' = insMax chr line l
                 let v' = v.PlusLeft line
                 let t = T(h, l', v', r) 
-                t |> skew |> split
+                t |> skew |> split |> cont
 
-        ins (sizeLeft rope) rope
+        ins (sizeLeft rope) rope (fun x -> x)
 
     /// Deletes a range of characters from the rope at the given start index and length.
     let delete (start: int) (length: int) rope =
