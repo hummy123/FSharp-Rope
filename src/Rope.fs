@@ -49,9 +49,10 @@ module Rope =
     /// Creates a Rope with the specified string.
     let create str = insert 0 str empty
 
-#if DEBUG
+    /// Returns a string containing all text in the rope.
+    /// Takes O(n) time. Recommended to use substring or getLine functions
+    /// in most cases as they are much more performant.
     let text = text
-#endif
 
     type Rope with
         member this.Insert(index, string) = insert index string this
@@ -59,6 +60,4 @@ module Rope =
         member this.Substring(startIndex, length) = substring startIndex length this
         member this.GetLine lineNumber = getLine lineNumber this
         member this.IndicesOf string = indicesOf string this
-#if DEBUG
         member this.Text() = text this
-#endif
