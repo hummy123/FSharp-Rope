@@ -21,7 +21,7 @@ let idxGen maxLen = Gen.choose(0, maxLen) |> Gen.sample 1 1 |> List.head
 let lengthGen min max = Gen.choose(min, max) |> Gen.sample 1 1 |> List.head
 
 // Property tests
-[<Property>] (* This test may crash because of a stack overflow. Adapt code to CPS. *)
+[<Property>] 
 let ``String and rope return same text after a series of inputs`` () =
     let mutable testString = initString
     let mutable testRope = initRope
@@ -80,3 +80,18 @@ let ``String and rope return same line after a series of newline inserts`` () =
         // Test last line is same in both.
         let lastLineNum = spliString.Length - 1
         Assert.Equal(spliString[lastLineNum], testRope.GetLine lastLineNum)
+
+[<Property>]
+let ``String and rope return same text after a series of deletions`` () =
+    let mutable testString = initString
+    let mutable testRope = initRope
+
+    for i in [0..20] do
+        // Generate deletion idx and length
+        let idx = idxGen <| Math.Max(testString.Length - 1, 0)
+        let length = lengthGen idx <| Math.Max(testString.Length - 1, 0)
+
+        // Insert and then assert
+        testString <- testString.Remove(idx, length)
+        testRope <- testRope.Delete(idx, length)
+        Assert.Equal(testString, testRope.Text())
