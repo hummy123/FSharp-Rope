@@ -23,17 +23,24 @@ module internal RopeTree =
         let rec ins curIndex node =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E)
+            | T(h, l, v, r) when insIndex > curIndex ->
+                let nextIndex = curIndex + 1 + sizeLeft r
+                let v' = v.PlusRight line
+                let r' = ins nextIndex r
+                let t = T(h, l, v', r') 
+                t |> skew |> split
+            | T(h, l, v, r) when insIndex < curIndex ->
+                let nextIndex = curIndex - 1 - sizeRight l
+                let v' = v.PlusLeft line
+                let l' = ins nextIndex l
+                let t = T(h, l', v', r) 
+                t |> skew |> split
             | T(h, l, v, r) ->
-                if insIndex > curIndex then
-                    let nextIndex = curIndex + 1 + sizeLeft r
-                    T(h, l, v.PlusRight line, ins nextIndex r) |> skew |> split
-                elif insIndex < curIndex then
-                    let nextIndex = curIndex - 1 - sizeRight l
-                    T(h, ins nextIndex l, v.PlusLeft line, r) |> skew |> split
-                else
-                    (* We want to insert at the same index as this node. *)
-                    let newLeft = insMax chr line l
-                    T(h, newLeft, v.PlusLeft line, r) |> skew |> split
+                (* We want to insert at the same index as this node. *)
+                let l' = insMax chr line l
+                let v' = v.PlusLeft line
+                let t = T(h, l', v', r) 
+                t |> skew |> split
 
         ins (sizeLeft rope) rope
 
