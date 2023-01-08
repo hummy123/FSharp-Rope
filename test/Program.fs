@@ -26,14 +26,17 @@ module Program =
         let str = "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
         let rope = Rope.create str
 
-        // delete "\ndolor sit amet,\n"
-        let rope = rope.Delete(11, 17)
-        let str = str.Remove(11, 17)
 
+        // delete "Aenean ornare, \n"
+        let rope = rope.Delete(58, 16)
+        let str = str.Remove(58, 16)
 
-        // delete "\nlacus vitae \ntempor pretium,\n"
-        let rope = rope.Delete(57, 29)
-        let str = str.Remove(57, 29)
+        // delete "tempor pretium,\nleo nulla\n"
+        let rope = rope.Delete(71, 26)
+        let str = str.Remove(71, 26)
 
+        //delete "dolor sit amet,\n"
+        let rope = rope.Delete(12, 16)
+        let str = str.Remove(12, 16)
         printfn "%A" str
         0
