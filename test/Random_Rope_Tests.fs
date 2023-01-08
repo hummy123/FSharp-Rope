@@ -89,15 +89,14 @@ let ``String and rope return same text after a series of deletions`` () =
     for i in [0..20] do
         // Generate deletion idx and length
         let idx = idxGen <| Math.Max(testString.Length - 1, 0)
-        let length = lengthGen idx <| Math.Max(testString.Length - 1, 0)
+        let remainLength = testString.Length - idx
+        let length = lengthGen idx <| Math.Max(remainLength, 0)
 
         let idx = Math.Min(idx, lorem.Length - 1)
         let idx = Math.Max(idx, 0)
 
-        let length = Math.Min(length, lorem.Length - 1 - idx)
+        let length = Math.Min(length, remainLength)
         let length = Math.Max(length, 0)
-
-        printfn "idx, len = %A" (idx, length)
 
         // Insert and then assert
         testString <- testString.Remove(idx, length)
