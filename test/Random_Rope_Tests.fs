@@ -104,7 +104,6 @@ let ``String and rope return same text after a series of deletions`` () =
         testRope <- testRope.Delete(idx, length)
         Assert.Equal(testString, testRope.Text())
 
-
 [<Property>]
 let ``String and rope return same substring after a series of deletions`` () =
     let mutable testString = initString
@@ -127,9 +126,47 @@ let ``String and rope return same substring after a series of deletions`` () =
         testRope <- testRope.Delete(idx, length)
 
         // Now generate substring ranges
-        let startIdx = idxGen <| testString.Length - 1
+        let idx = idxGen <| Math.Max(testString.Length - 1, 0)
         let remainLength = testString.Length - idx
         let length = lengthGen 0 <| Math.Max(remainLength, 0)
+
+        let idx = Math.Min(idx, testString.Length - 1)
+        let idx = Math.Max(idx, 0)
+
+        // Get substrings
+        let strSub = testString.Substring(idx, length)
+        let ropeSub = testRope.Substring(idx, length)
+
+        Assert.Equal(strSub, ropeSub)
+
+[<Property>]
+let ``String and rope return same line after a series of deletions`` () =
+    let mutable testString = initString
+    let mutable testRope = initRope
+
+    for i in [0..20] do
+        // Generate deletion idx and length
+        let idx = idxGen <| Math.Max(testString.Length - 1, 0)
+        let remainLength = testString.Length - idx
+        let length = lengthGen idx <| Math.Max(remainLength, 0)
+
+        let idx = Math.Min(idx, testString.Length - 1)
+        let idx = Math.Max(idx, 0)
+
+        let length = Math.Min(length, remainLength)
+        let length = Math.Max(length, 0)
+
+        // Delete 
+        testString <- testString.Remove(idx, length)
+        testRope <- testRope.Delete(idx, length)
+
+        // Now generate substring ranges
+        let idx = idxGen <| Math.Max(testString.Length - 1, 0)
+        let remainLength = testString.Length - idx
+        let length = lengthGen 0 <| Math.Max(remainLength, 0)
+
+        let idx = Math.Min(idx, testString.Length - 1)
+        let idx = Math.Max(idx, 0)
 
         let length = Math.Min(length, remainLength)
         let length = Math.Max(length, 0)
