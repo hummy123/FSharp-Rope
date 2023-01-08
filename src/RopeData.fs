@@ -3,7 +3,7 @@
 open Types
 
  (* Internal module to organise functions that get data like index or line size. *)
- module internal RopeData =
+ module RopeData =
     let inline size node =
         match node with
         | E -> 0
@@ -43,3 +43,7 @@ open Types
         match node with
         | E -> 0
         | T(_, _, v, r) -> v.RightLns
+
+    let rec traverseLines = function
+        | E -> 0
+        | T(_, l, v, r) -> traverseLines l + 1 + traverseLines r

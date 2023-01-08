@@ -80,8 +80,10 @@ open RopeData
         | T(h, l, v, r) -> 
             match splitMax r with
             | r', b, lns -> 
-                let v' = { v with RightLns = lines r' }
-                T(h, l, v', r') |> adjust, b, lns
+                let v' = { v with RightLns = lines r'; RightIdx = size r' }
+                let tree = T(h, l, v', r') |> adjust
+                let b' = { b with RightLns = lines tree; RightIdx = size tree }
+                tree, b', lns
         | _ -> failwith "unexpected splitMax case"
 
     let rec foldOpt (f: OptimizedClosures.FSharpFunc<_, _, _>) x t =

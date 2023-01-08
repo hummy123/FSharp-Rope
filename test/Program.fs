@@ -1,5 +1,6 @@
 open FsRope.Rope
 open System.Collections
+open FsRope.RopeData
 open FsRope
 open System
 open FsCheck
@@ -22,17 +23,17 @@ let lengthGen min max = Gen.choose(min, max) |> Gen.sample 1 1 |> List.head
 module Program =
     [<EntryPoint>]
     let main _ =  
-        let mutable testString = initString
-        let mutable testRope = initRope
+        let str = "Lorem ipsum\ndolor sit amet,\nconsectetur\nadipiscing elit. \nAenean ornare, \nlacus vitae \ntempor pretium,\nleo nulla\nsollicitudin elit,\nin ultrices mi dui et\nipsum. Cras condimentum\npurus in metus \nsodales tincidunt. Praesent"
+        let rope = Rope.create str
 
-        let idx, length = (52, 117)
-        testString <- testString.Remove(idx, length)
-        testRope <- testRope.Delete(idx, length)
-        printfn "first pass: %A" (testString = testRope.Text())
+        // delete "\ndolor sit amet,\n"
+        let rope = rope.Delete(11, 17)
+        let str = str.Remove(11, 17)
 
-        let idx, length = (45, 50)
-        testString <- testString.Remove(idx, length)
-        testRope <- testRope.Delete(idx, length)
-        printfn "sec pass: %A" (testString = testRope.Text())
 
+        // delete "\nlacus vitae \ntempor pretium,\n"
+        let rope = rope.Delete(57, 29)
+        let str = str.Remove(57, 29)
+
+        printfn "%A" str
         0
