@@ -17,13 +17,16 @@ module Rope =
         let rec ins idxAcc ropeAcc = 
             if enumerator.MoveNext() then
                 let cur = enumerator.GetTextElement()
-                let line =
-                    if cur.Contains("\n") || cur.Contains("\r")
-                    then HasLine
-                    else HasNoLine
-                let cur = cur.ToCharArray()
-                let rope = insertChr idxAcc cur line ropeAcc
-                ins (idxAcc + 1) rope
+                if cur <> "" then
+                    let line =
+                        if cur.Contains("\n") || cur.Contains("\r")
+                        then HasLine
+                        else HasNoLine
+                    let cur = cur.ToCharArray()
+                    let rope = insertChr idxAcc cur line ropeAcc
+                    ins (idxAcc + 1) rope
+                else
+                    ins (idxAcc) ropeAcc
             else
                 ropeAcc
         let tree = ins insIndex rope.Tree
