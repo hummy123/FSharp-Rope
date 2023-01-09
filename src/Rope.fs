@@ -15,19 +15,19 @@ module Rope =
     let insert insIndex (str: string) rope =
         if str <> ""
         then
+            (* Explicit mutability and a while-loop is faster than 
+             * tail recursion in my tests for some reason. *)
+            let mutable tree = rope.Tree
+            let mutable idx = insIndex
             let enumerator = StringInfo.GetTextElementEnumerator(str)
-            let rec ins idxAcc ropeAcc = 
-                if enumerator.MoveNext() then
-                    let cur = enumerator.GetTextElement()
-                    let line =
-                            if cur.Contains("\n") || cur.Contains("\r")
-                            then HasLine
-                            else HasNoLine
-                    let rope = insertChr idxAcc cur line ropeAcc
-                    ins (idxAcc + 1) rope
-                else
-                    ropeAcc
-            let tree = ins insIndex rope.Tree
+            while enumerator.MoveNext() do
+                let cur = enumerator.GetTextElement()
+                let line =
+                        if cur.Contains("\n") || cur.Contains("\r")
+                        then HasLine
+                        else HasNoLine
+                tree <- insertChr insIndex cur line tree
+                idx <- idx + 1
             { Tree = tree; TextLength = size tree; LineCount = lines tree }
         else
             rope
