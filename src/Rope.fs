@@ -20,9 +20,10 @@ module Rope =
             let mutable tree = rope.Tree
             let mutable idx = insIndex
             let mutable line = HasNoLine
+            let mutable cur = ""
             let enumerator = StringInfo.GetTextElementEnumerator(str)
             while enumerator.MoveNext() do
-                let cur = enumerator.GetTextElement()
+                cur <- enumerator.GetTextElement()
                 line <-
                         if cur.Contains("\n") || cur.Contains("\r")
                         then HasLine

@@ -27,26 +27,19 @@ module internal RopeTree =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
             | T(h, l, v, r) when insIndex < curIndex ->
-                let nextIndex = curIndex - 1 - sizeRight l
-                let v' = v.PlusLeft line
-                ins nextIndex l (fun l' ->
-                    T(h, l', v', r) 
+                ins (curIndex - 1 - sizeRight l) l (fun l' ->
+                    T(h, l', v.PlusLeft line, r) 
                     |> skew |> split |> cont
                 )
             | T(h, l, v, r) when insIndex > curIndex ->
-                let nextIndex = curIndex + 1 + sizeLeft r
-                let v' = v.PlusRight line
-
-                ins nextIndex r (fun r' -> 
-                    T(h, l, v', r') 
+                ins (curIndex + 1 + sizeLeft r) r (fun r' -> 
+                    T(h, l, v.PlusRight line, r') 
                     |> skew |> split |> cont
                 )
             | T(h, l, v, r) ->
                 (* We want to insert at the same index as this node. *)
-                let l' = insMax chr line l
-                let v' = v.PlusLeft line
-                let t = T(h, l', v', r) 
-                t |> skew |> split |> cont
+                T(h, insMax chr line l, v.PlusLeft line, r) 
+                |> skew |> split |> cont
 
         ins (sizeLeft rope) rope topLevelCont
 

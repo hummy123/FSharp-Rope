@@ -38,15 +38,15 @@ type InsertIntoDocument() =
 
     [<Benchmark; InvocationCount(1000)>]
     member this.InsertIntoRopeAtStart() = 
-        this.rope.Insert(0, "A")
+        Rope.insert 0 "A" this.rope
 
     [<Benchmark; InvocationCount(1000)>]
     member this.InsertIntoRopeAtMiddle() =
-        this.rope.Insert(this.docLength / 2, "A")
+        Rope.insert (this.docLength / 2) "A" this.rope
 
     [<Benchmark; InvocationCount(1000)>]
     member this.InsertIntoRopeAtEnd() = 
-        this.rope.Insert(this.docLength, "A")
+        Rope.insert this.docLength "A" this.rope
 
 [<MemoryDiagnoser; HtmlExporter; MarkdownExporter>]
 type DeleteFromDocument() =

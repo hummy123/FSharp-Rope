@@ -19,7 +19,7 @@ open RopeData
         | E -> 0
         | T(lvt, _, _, _) -> lvt
 
-    let skew node =
+    let inline skew node =
         match node with
         | T(lvx, T(lvy, a, ky, b), kx, c) as t when lvx = lvy ->
             let innerVal = kx.SetData (idxLnSize b) (idxLnSize c)
@@ -38,8 +38,8 @@ open RopeData
             T(lvx + 1, left, outerVal, right)
         | t -> t
 
-    let nlvl =
-        function
+    let inline nlvl node =
+        match node with
         | T(lvt, _, _, _) as t -> if sngl t then lvt else lvt + 1
         | _ -> failwith "unexpected nlvl case"
 

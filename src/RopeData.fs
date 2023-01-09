@@ -43,7 +43,3 @@ open Types
         match node with
         | E -> 0
         | T(_, _, v, r) -> v.RightLns
-
-    let rec traverseLines = function
-        | E -> 0
-        | T(_, l, v, r) -> traverseLines l + 1 + traverseLines r
