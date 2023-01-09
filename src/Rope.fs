@@ -19,10 +19,11 @@ module Rope =
              * tail recursion in my tests for some reason. *)
             let mutable tree = rope.Tree
             let mutable idx = insIndex
+            let mutable line = HasNoLine
             let enumerator = StringInfo.GetTextElementEnumerator(str)
             while enumerator.MoveNext() do
                 let cur = enumerator.GetTextElement()
-                let line =
+                line <-
                         if cur.Contains("\n") || cur.Contains("\r")
                         then HasLine
                         else HasNoLine

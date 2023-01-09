@@ -26,19 +26,19 @@ module internal RopeTree =
         let rec ins curIndex node cont =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
+            | T(h, l, v, r) when insIndex < curIndex ->
+                let nextIndex = curIndex - 1 - sizeRight l
+                let v' = v.PlusLeft line
+                ins nextIndex l (fun l' ->
+                    T(h, l', v', r) 
+                    |> skew |> split |> cont
+                )
             | T(h, l, v, r) when insIndex > curIndex ->
                 let nextIndex = curIndex + 1 + sizeLeft r
                 let v' = v.PlusRight line
 
                 ins nextIndex r (fun r' -> 
                     T(h, l, v', r') 
-                    |> skew |> split |> cont
-                )
-            | T(h, l, v, r) when insIndex < curIndex ->
-                let nextIndex = curIndex - 1 - sizeRight l
-                let v' = v.PlusLeft line
-                ins nextIndex l (fun l' ->
-                    T(h, l', v', r) 
                     |> skew |> split |> cont
                 )
             | T(h, l, v, r) ->
