@@ -13,25 +13,23 @@ open System.Globalization
 module Rope =
     /// Returns a Rope with the string inserted.
     let insert insIndex (str: string) rope =
-        let enumerator = StringInfo.GetTextElementEnumerator(str)
-        let chars = ResizeArray()
-        let rec ins idxAcc ropeAcc = 
-            if enumerator.MoveNext() then
-                let cur = enumerator.GetTextElement()
-                if cur <> "" then
+        if str = ""
+        then rope
+        else
+            let enumerator = StringInfo.GetTextElementEnumerator(str)
+            let rec ins idxAcc ropeAcc = 
+                if enumerator.MoveNext() then
+                    let cur = enumerator.GetTextElement()
                     let line =
-                        if cur.Contains("\n") || cur.Contains("\r")
-                        then HasLine
-                        else HasNoLine
-                    //let cur = cur.ToCharArray()
+                            if cur.Contains("\n") || cur.Contains("\r")
+                            then HasLine
+                            else HasNoLine
                     let rope = insertChr idxAcc cur line ropeAcc
                     ins (idxAcc + 1) rope
                 else
-                    ins (idxAcc) ropeAcc
-            else
-                ropeAcc
-        let tree = ins insIndex rope.Tree
-        { Tree = tree; TextLength = size tree; LineCount = lines tree }
+                    ropeAcc
+            let tree = ins insIndex rope.Tree
+            { Tree = tree; TextLength = size tree; LineCount = lines tree }
 
     /// Returns a rope with text in the specified range removed.
     let delete start length rope = 
