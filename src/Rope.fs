@@ -32,9 +32,34 @@ module Rope =
                 tree <- insertChr idx cur line tree
                 idx <- idx + 1
 
-            { Tree = tree; TextLength = size tree; LineCount = lines tree }
+            let (totalTextLen, totalLineLen) = idxLnSize tree
+            { Tree = tree; TextLength = totalTextLen; LineCount = totalLineLen }
         else
             rope
+
+    /// Returns a rope with the given string.
+    let append str rope = 
+        if str <> ""
+            then
+                (* Explicit mutability and a while-loop is faster than 
+                 * tail recursion in my tests for some reason. *)
+                let mutable tree = rope.Tree
+                let mutable line = HasNoLine
+                let mutable cur = ""
+                let enumerator = StringInfo.GetTextElementEnumerator(str)
+
+                while enumerator.MoveNext() do
+                    cur <- enumerator.GetTextElement()
+                    line <-
+                            if cur.Contains("\n") || cur.Contains("\r")
+                            then HasLine
+                            else HasNoLine
+                    tree <- insMax cur line tree
+
+                let (totalTextLen, totalLineLen) = idxLnSize tree
+                { Tree = tree; TextLength = totalTextLen; LineCount = totalLineLen }
+            else
+                rope
 
     /// Returns a rope with text in the specified range removed.
     let delete start length rope = 
@@ -51,7 +76,7 @@ module Rope =
     let empty = { Tree = E; TextLength = 0; LineCount = 0; }
 
     /// Creates a Rope with the specified string.
-    let create str = insert 0 str empty
+    let create str = append str empty
 
     /// Returns a string containing all text in the rope.
     /// Takes O(n) time. Recommended to use substring or getLine functions
@@ -60,6 +85,7 @@ module Rope =
 
     type Rope with
         member this.Insert(index, string) = insert index string this
+        member this.Apeend(string) = append string this
         member this.Delete(startIndex, length) = delete startIndex length this
         member this.Substring(startIndex, length) = substring startIndex length this
         member this.GetLine lineNumber = getLine lineNumber this

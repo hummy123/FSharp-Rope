@@ -55,9 +55,9 @@ let ``Concatenate String to Rope`` () =
     let mutable rope = Rope.empty
     for i in [0..100] do
         b.Append(i.ToString()) |> ignore
-        rope <- rope.Insert(i, i.ToString())
+        rope <- rope.Apeend(i.ToString())
         b.Append(" ") |> ignore
-        rope <- rope.Insert(i + 1, " ")
+        rope <- rope.Apeend(" ")
     Assert.Equal(b.ToString(), rope.Text())
 
 [<Fact>]

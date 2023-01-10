@@ -13,7 +13,7 @@ module internal RopeTree =
         | E -> T(1, E, RopeNode.create chr line, E)
         | T(h, l, v, r) -> T(h, insMin chr line l, v.PlusLeft line, r) |> skew |> split
 
-    let rec private insMax chr line =
+    let rec internal insMax chr line =
         function
         | E -> T(1, E, RopeNode.create chr line, E)
         | T(h, l, v, r) -> T(h, l, v.PlusRight line, insMax chr line r)
