@@ -122,14 +122,32 @@ module internal RopeTree =
             | E -> ()
             | T(h, l, v, r) ->
                 if start < curIndex
-                then sub (curIndex - 1 - sizeRight l) l
+                then sub (curIndex - stringLength l - sizeRight l) l
+                let nextIndex = curIndex + v.String.Length
 
-                if start <= curIndex && finish > curIndex then 
+                if start <= curIndex && finish >= nextIndex then 
+                    (* Node is fully in range. *)
                     for i in v.String do
                         acc.Add i
+                elif start >= curIndex && finish <= nextIndex then
+                    (* Range is within node. *)
+                    let strStart = start - curIndex
+                    let length = finish - start
+                    for i in v.String.Substring(strStart, length) do
+                        acc.Add i
+                elif start <= curIndex && finish < nextIndex then
+                    (* Start of node is within range. *)
+                    let length = curIndex - finish
+                    for i in v.String.Substring(0, length) do
+                        acc.Add i
+                elif start > curIndex && start <= nextIndex then
+                    (* End of node is within range. *)
+                    let strStart = start - curIndex
+                    for i in v.String[strStart..] do
+                        acc.Add i
 
-                if finish > curIndex
-                then sub (curIndex + 1 + sizeLeft r) r
+                if finish > nextIndex
+                then sub (nextIndex + sizeLeft r) r
 
         sub (sizeLeft rope) rope
         new string(acc.ToArray())
