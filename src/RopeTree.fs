@@ -93,7 +93,7 @@ module internal RopeTree =
                 then sub (curIndex - 1 - sizeRight l) l
 
                 if start <= curIndex && finish > curIndex then 
-                    for i in v.Char do
+                    for i in v.String do
                         acc.Add i
 
                 if finish > curIndex
@@ -113,7 +113,7 @@ module internal RopeTree =
                 then lin (curLine - lineLength l - linesRight l) l
 
                 if line = curLine then 
-                    for i in v.Char do
+                    for i in v.String do
                         acc.Add i
 
                 if line >= curLine
@@ -130,7 +130,7 @@ module internal RopeTree =
         let acc = ResizeArray<int>()
 
         fold (fun pos node -> 
-            if node.Char = startChar && substring pos strLength rope.Tree = string then
+            if node.String = startChar && substring pos strLength rope.Tree = string then
                 acc.Add pos
             pos + 1
         ) 0 rope.Tree |> ignore
@@ -143,7 +143,7 @@ module internal RopeTree =
     let text rope = 
         let arr = ResizeArray<char>()
         fold (fun _ node -> 
-            for i in node.Char do
+            for i in node.String do
                 arr.Add i
         ) () rope.Tree
         new string(arr.ToArray())

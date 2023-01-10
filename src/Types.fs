@@ -3,9 +3,7 @@
 module Types =
     /// A RopeNode contains a character with index metadata.
     type RopeNode = {
-        (* We are storing a char array because we want to represent grapheme clusters
-         * as a single char. *)
-        Char: string;
+        String: string;
         Lines: int;
         LeftIdx: int;
         RightIdx: int;
@@ -31,3 +29,6 @@ module Types =
 
     [<Literal>]
     let HasNoLine = 0
+
+    [<Literal>]
+    let MaxNodeLength = 32

@@ -4,7 +4,7 @@ open Types
 
 module internal RopeNode =
     let inline create chr line = {
-        Char = chr;
+        String = chr;
         Lines = line;
         LeftIdx = 0;
         RightIdx = 0;
@@ -20,7 +20,7 @@ module internal RopeNode =
             RightLns = rightLns; }
 
     let inline setChar chr node =
-        { node with Char = chr }
+        { node with String = chr }
 
     let inline setIndex leftIdx rightIdx node = 
         { node with

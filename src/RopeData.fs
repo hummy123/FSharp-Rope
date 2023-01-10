@@ -9,6 +9,11 @@ open Types
         | E -> 0
         | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1
 
+    let inline stringLength node =
+        match node with
+        | E -> 0
+        | T(_, l, v, _) -> v.String.Length
+
     let inline lines node =
         match node with
         | E -> 0
