@@ -4,7 +4,6 @@
     <TargetFramework>net7.0</TargetFramework>
     <RootNamespace>FsRope</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-	  <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>

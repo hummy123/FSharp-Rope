@@ -5,12 +5,23 @@ open System.Text
 module Program =
     [<EntryPoint>]
     let main _ =  
-        let mutable table = Rope.create ""
-        let mutable runningStr = ""
-        for i in [0..10] do
-            let halfLength = runningStr.Length / 2
-            table <- table.Insert(halfLength, "hello")
-            runningStr <- runningStr.Substring(0,halfLength) + "hello" + runningStr.Substring(halfLength)
-            printfn "rope: \t\t%A" <| table.Text()
-            printfn "expected: \t%A" <| runningStr
+        let b = StringBuilder()
+        let mutable rope = Rope.empty
+        let mutable middle = 0
+        for i in [1..7] do
+            b.Insert(middle, i.ToString("d3")) |> ignore
+            rope <- rope.Insert(middle, i.ToString("d3"))
+
+            middle <- middle + 3
+            b.Insert(middle, " ") |> ignore
+            rope <- rope.Insert(middle, " ")
+
+            middle <- middle + 1
+            rope <- rope.Insert(middle, (999 - i).ToString("d3"))
+            rope <- rope.Insert(middle + 3, " ")
+            b.Insert(middle, (999 - i).ToString("d3")) |> ignore
+            b.Insert(middle + 3, " ") |> ignore
+
+        printfn "rope: %A" <| rope.Text()
+        printfn "text: %A" <| b.ToString()
         0
