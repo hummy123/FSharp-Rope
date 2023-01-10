@@ -11,17 +11,11 @@ open System.Globalization
 
  /// A rope is a data structure that allows manipulating text in O(log n) time.
 module Rope =
-    /// Returns the number of line breaks in a string.
-    let inline private stringLines (string: string) = 
-        let mutable lines = 0
-        for i in string do // ignore \r\n case for now
-            if i = '\n' || i = '\r' then
-                lines <- lines + 1
 
     /// Returns a slice of a string given the level.
     let inline private stringSlice (string: string) (level: int) =
-        let start = MaxNodeLength * level
-        let finish = MaxNodeLength * (level + 1) - 1
+        let start = TargetNodeLength * level
+        let finish = TargetNodeLength * (level + 1) - 1
         string[start..finish]
 
     /// Returns a Rope with the string inserted.
@@ -30,20 +24,7 @@ module Rope =
         then
             (* Explicit mutability and a while-loop is faster than 
              * tail recursion in my tests for some reason. *)
-            let mutable tree = rope.Tree
-            let mutable idx = insIndex
-            let mutable line = HasNoLine
-            let mutable cur = ""
-            let enumerator = StringInfo.GetTextElementEnumerator(str)
-
-            while enumerator.MoveNext() do
-                cur <- enumerator.GetTextElement()
-                line <-
-                        if cur.Contains("\n") || cur.Contains("\r")
-                        then HasLine
-                        else HasNoLine
-                tree <- insertChr idx cur line tree
-                idx <- idx + 1
+            let tree = insertChr insIndex str (stringLines str) rope.Tree
 
             let (totalTextLen, totalLineLen) = idxLnSize tree
             { Tree = tree; TextLength = totalTextLen; LineCount = totalLineLen }

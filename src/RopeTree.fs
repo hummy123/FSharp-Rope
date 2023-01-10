@@ -11,12 +11,12 @@ module internal RopeTree =
     let rec private insMin chr line node =
         match node with
         | E -> T(1, E, RopeNode.create chr line, E)
-        | T(h, l, v, r) -> T(h, insMin chr line l, v.PlusLeft line, r) |> skew |> split
+        | T(h, l, v, r) -> T(h, insMin chr line l, v.PlusLeft chr.Length line, r) |> skew |> split
 
     let rec internal insMax chr line =
         function
         | E -> T(1, E, RopeNode.create chr line, E)
-        | T(h, l, v, r) -> T(h, l, v.PlusRight line, insMax chr line r)
+        | T(h, l, v, r) -> T(h, l, v.PlusRight chr.Length line, insMax chr line r)
 
     /// Used for CPS.
     let inline topLevelCont t = t
@@ -28,18 +28,46 @@ module internal RopeTree =
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
             | T(h, l, v, r) when insIndex < curIndex ->
                 ins (curIndex - 1 - sizeRight l) l (fun l' ->
-                    T(h, l', v.PlusLeft line, r) 
+                    T(h, l', v.PlusLeft chr.Length line, r) 
                     |> skew |> split |> cont
                 )
             | T(h, l, v, r) when insIndex > curIndex ->
                 ins (curIndex + 1 + sizeLeft r) r (fun r' -> 
-                    T(h, l, v.PlusRight line, r') 
+                    T(h, l, v.PlusRight chr.Length line, r') 
                     |> skew |> split |> cont
                 )
-            | T(h, l, v, r) ->
+            | T(h, l, v, r) when insIndex = curIndex ->
                 (* We want to insert at the same index as this node. *)
-                T(h, insMax chr line l, v.PlusLeft line, r) 
-                |> skew |> split |> cont
+                if v.String.Length >= TargetNodeLength then
+                    T(h, insMax chr line l, v.PlusLeft chr.Length line, r) 
+                    |> skew |> split |> cont
+                else
+                    let v' = {v with String = chr + v.String}
+                    T(h, l, v', r)
+                    |> skew |> split |> cont
+            | T(h, l, v, r) when insIndex = curIndex + v.String.Length ->
+                (* We want to insert at the end of this node. *)
+                if v.String.Length >= TargetNodeLength then
+                    T(h, l, v, insMin chr line r)
+                    |> skew |> split |> cont
+                else
+                    let v' = {v with String = v.String + chr}
+                    T(h, l, v', r)
+                    |> skew |> split |> cont
+            | T(h, l, v, r) ->
+                (* We want to insert somewhere between the start and end of this node. *)
+                let difference = insIndex - curIndex
+                let v1 = v.String[0..difference - 1]
+                let v3 = v.String[difference..]
+                if v.String.Length >= TargetNodeLength then
+                    let lchr = v1 + chr
+                    let lchrLines = stringLines lchr
+                    T(h, insMax lchr lchrLines l, v.PlusLeft lchr.Length lchrLines, r)
+                    |> skew |> split |> cont
+                else
+                    let v' = {v with String = v1 + chr + v3}
+                    T(h, l, v', r)
+                    |> skew |> split |> cont
 
         ins (sizeLeft rope) rope topLevelCont
 

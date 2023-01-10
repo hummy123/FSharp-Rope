@@ -48,3 +48,11 @@ open Types
         match node with
         | E -> 0
         | T(_, _, v, r) -> v.RightLns
+
+    /// Returns the number of line breaks in a string.
+    let inline stringLines (string: string) = 
+        let mutable lines = 0
+        for i in string do // ignore \r\n case for now
+            if i = '\n' || i = '\r' then
+                lines <- lines + 1
+        lines

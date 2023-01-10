@@ -31,4 +31,4 @@ module Types =
     let HasNoLine = 0
 
     [<Literal>]
-    let MaxNodeLength = 32
+    let TargetNodeLength = 32
