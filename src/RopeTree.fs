@@ -135,7 +135,7 @@ module internal RopeTree =
                     let length = finish - start
                     for i in v.String.Substring(strStart, length) do
                         acc.Add i
-                elif start <= curIndex && finish < nextIndex then
+                elif start <= curIndex && finish < nextIndex && finish > curIndex then
                     (* Start of node is within range. *)
                     let length = finish - curIndex
                     for i in v.String.Substring(0, length) do
