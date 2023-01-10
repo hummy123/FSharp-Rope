@@ -27,12 +27,12 @@ module internal RopeTree =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
             | T(h, l, v, r) when insIndex < curIndex ->
-                ins (curIndex - 1 - sizeRight l) l (fun l' ->
+                ins (curIndex - stringLength l - sizeRight l) l (fun l' ->
                     T(h, l', v.PlusLeft chr.Length line, r) 
                     |> skew |> split |> cont
                 )
             | T(h, l, v, r) when insIndex > curIndex + v.String.Length ->
-                ins (curIndex + 1 + sizeLeft r) r (fun r' -> 
+                ins (curIndex + v.String.Length + sizeLeft r) r (fun r' -> 
                     T(h, l, v.PlusRight chr.Length line, r') 
                     |> skew |> split |> cont
                 )

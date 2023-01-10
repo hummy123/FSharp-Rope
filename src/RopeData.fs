@@ -7,7 +7,7 @@ open Types
     let inline size node =
         match node with
         | E -> 0
-        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1
+        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + v.String.Length
 
     let inline stringLength node =
         match node with
@@ -27,7 +27,7 @@ open Types
     let inline idxLnSize node =
         match node with
         | E -> 0, 0
-        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1, v.LeftLns + v.RightLns + v.Lines
+        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + v.String.Length, v.LeftLns + v.RightLns + v.Lines
 
     let inline sizeLeft node = 
         match node with 
