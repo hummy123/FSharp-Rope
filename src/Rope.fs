@@ -22,14 +22,16 @@ module Rope =
             let mutable line = HasNoLine
             let mutable cur = ""
             let enumerator = StringInfo.GetTextElementEnumerator(str)
+
             while enumerator.MoveNext() do
                 cur <- enumerator.GetTextElement()
                 line <-
                         if cur.Contains("\n") || cur.Contains("\r")
                         then HasLine
                         else HasNoLine
-                tree <- insertChr insIndex cur line tree
+                tree <- insertChr idx cur line tree
                 idx <- idx + 1
+
             { Tree = tree; TextLength = size tree; LineCount = lines tree }
         else
             rope

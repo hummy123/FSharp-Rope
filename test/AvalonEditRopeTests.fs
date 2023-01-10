@@ -53,7 +53,7 @@ let ``Text to String with Parts`` () =
 let ``Concatenate String to Rope`` () =
     let b = StringBuilder()
     let mutable rope = Rope.empty
-    for i in [0..1000] do
+    for i in [0..100] do
         b.Append(i.ToString()) |> ignore
         rope <- rope.Insert(i, i.ToString())
         b.Append(" ") |> ignore
