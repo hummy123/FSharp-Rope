@@ -11,6 +11,19 @@ open System.Globalization
 
  /// A rope is a data structure that allows manipulating text in O(log n) time.
 module Rope =
+    /// Returns the number of line breaks in a string.
+    let inline private stringLines (string: string) = 
+        let mutable lines = 0
+        for i in string do // ignore \r\n case for now
+            if i = '\n' || i = '\r' then
+                lines <- lines + 1
+
+    /// Returns a slice of a string given the level.
+    let inline private stringSlice (string: string) (level: int) =
+        let start = MaxNodeLength * level
+        let finish = MaxNodeLength * (level + 1) - 1
+        string[start..finish]
+
     /// Returns a Rope with the string inserted.
     let insert insIndex (str: string) rope =
         if str <> ""
