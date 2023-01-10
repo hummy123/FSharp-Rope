@@ -70,7 +70,7 @@ module Rope =
     let empty = { Tree = E; TextLength = 0; LineCount = 0; }
 
     /// Creates a Rope with the specified string.
-    let create str = append str empty
+    let create str = insert 0 str empty
 
     /// Returns a string containing all text in the rope.
     /// Takes O(n) time. Recommended to use substring or getLine functions

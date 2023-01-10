@@ -22,7 +22,7 @@ module internal RopeTree =
     let inline topLevelCont t = t
     
     /// Inserts a char array into the rope at the specified index.
-    let inline insertChr insIndex chr line rope =
+    let insertChr insIndex chr line rope =
         let rec ins curIndex node cont =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
@@ -31,7 +31,7 @@ module internal RopeTree =
                     T(h, l', v.PlusLeft chr.Length line, r) 
                     |> skew |> split |> cont
                 )
-            | T(h, l, v, r) when insIndex > curIndex ->
+            | T(h, l, v, r) when insIndex > curIndex + v.String.Length ->
                 ins (curIndex + 1 + sizeLeft r) r (fun r' -> 
                     T(h, l, v.PlusRight chr.Length line, r') 
                     |> skew |> split |> cont
@@ -62,7 +62,11 @@ module internal RopeTree =
                 if v.String.Length >= TargetNodeLength then
                     let lchr = v1 + chr
                     let lchrLines = stringLines lchr
-                    T(h, insMax lchr lchrLines l, v.PlusLeft lchr.Length lchrLines, r)
+                    let v' = {v with 
+                                String = v3;
+                                LeftIdx = v.LeftIdx + lchr.Length; 
+                                LeftLns = v.LeftLns + lchrLines; }
+                    T(h, insMax lchr lchrLines l, v', r)
                     |> skew |> split |> cont
                 else
                     let v' = {v with String = v1 + chr + v3}
