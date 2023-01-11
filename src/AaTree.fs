@@ -19,7 +19,7 @@ open RopeData
         | E -> 0
         | T(lvt, _, _, _) -> lvt
 
-    let inline skew node =
+    let skew node =
         match node with
         | T(lvx, T(lvy, a, ky, b), kx, c) as t when lvx = lvy ->
             let innerVal = kx.SetData (idxLnSize b) (idxLnSize c)
@@ -28,7 +28,7 @@ open RopeData
             T(lvx, a, outerVal, innerNode)
         | t -> t
 
-    let inline split node =
+    let split node =
         match node with
         | T(lvx, a, kx, T(lvy, b, ky, T(lvz, c, kz, d))) as t when lvx = lvy && lvy = lvz -> 
             let right = T(lvx, c, kz, d)

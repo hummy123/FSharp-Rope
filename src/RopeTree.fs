@@ -42,8 +42,8 @@ module internal RopeTree =
                     T(h, insMax chr line l, v.PlusLeft chr.Length line, r) 
                     |> skew |> split |> cont
                 else
-                    let v' = {v with String = chr + v.String}
-                    T(h, l, v', r)
+                    let vn = {v with String = chr + v.String}
+                    T(h, l, vn, r)
                     |> skew |> split |> cont
             | T(h, l, v, r) when insIndex = curIndex + v.String.Length ->
                 (* We want to insert at the end of this node. *)
@@ -51,8 +51,8 @@ module internal RopeTree =
                     T(h, l, v, insMin chr line r)
                     |> skew |> split |> cont
                 else
-                    let v' = {v with String = v.String + chr}
-                    T(h, l, v', r)
+                    let vn = {v with String = v.String + chr}
+                    T(h, l, vn, r)
                     |> skew |> split |> cont
             | T(h, l, v, r) ->
                 (* We want to insert somewhere between the start and end of this node. *)
@@ -62,15 +62,15 @@ module internal RopeTree =
                 if v.String.Length >= TargetNodeLength then
                     let lchr = v1 + chr
                     let lchrLines = stringLines lchr
-                    let v' = {v with 
+                    let vn = {v with 
                                 String = v3;
                                 LeftIdx = v.LeftIdx + lchr.Length; 
                                 LeftLns = v.LeftLns + lchrLines; }
-                    T(h, insMax lchr lchrLines l, v', r)
+                    T(h, insMax lchr lchrLines l, vn, r)
                     |> skew |> split |> cont
                 else
-                    let v' = {v with String = v1 + chr + v3}
-                    T(h, l, v', r)
+                    let vn = {v with String = v1 + chr + v3}
+                    T(h, l, vn, r)
                     |> skew |> split |> cont
 
         ins (sizeLeft rope) rope topLevelCont
