@@ -22,15 +22,18 @@ let lengthGen min max = Gen.choose(min, max) |> Gen.sample 1 1 |> List.head
 
 // Property tests involving insertion
 [<Property>] 
-let ``String and rope return same text after a series of inputs`` (idx: int) (insStr: string) =
-    (idx >= 0) ==> 
-        let mutable testString = initString
-        let mutable testRope = initRope
+let ``String and rope return same text after a series of inputs`` () =
+    let mutable testString = initString
+    let mutable testRope = initRope
 
-        if insStr <> "" && insStr <> null && idx >= 0 then
-            testString <- testString.Insert(idx, insStr)
-            testRope <- testRope.Insert(idx, insStr)
-            Assert.Equal(testString, testRope.Text())
+    for i in [0..20] do
+        // Generate inputs
+        let insStr = charGen
+        let idx = idxGen testString.Length
+        // Insert and then assert
+        testString <- testString.Insert(idx, insStr)
+        testRope <- testRope.Insert(idx, insStr)
+        Assert.Equal(testString, testRope.Text())
 
 [<Property>]
 let ``String and rope return same substring after a series of inserts`` () =
