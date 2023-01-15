@@ -8,70 +8,36 @@ open System.Globalization
  
  (* This module defines the core algorithms for operating on the rope. *)
 module internal RopeTree =
-    let rec private insMin chr line node =
+    let rec internal insMax chr line node cont =
         match node with
-        | E -> T(1, E, RopeNode.create chr line, E)
-        | T(h, l, v, r) -> T(h, insMin chr line l, v.PlusLeft chr.Length line, r) |> skew |> split
-
-    let rec internal insMax chr line =
-        function
-        | E -> T(1, E, RopeNode.create chr line, E)
-        | T(h, l, v, r) -> T(h, l, v.PlusRight chr.Length line, insMax chr line r)
+        | E -> T(1, E, RopeNode.create chr line, E) |> cont
+        | T(h, l, v, r) -> 
+            insMax chr line r (fun r' ->
+                T(h, l, v.PlusRight line, r') |> skew |> split |> cont
+            )
 
     /// Used for CPS.
     let inline topLevelCont t = t
     
     /// Inserts a char array into the rope at the specified index.
-    let insertChr insIndex chr line rope =
+    let inline insertChr insIndex chr line rope =
         let rec ins curIndex node cont =
             match node with
             | E -> T(1, E, RopeNode.create chr line, E) |> cont
             | T(h, l, v, r) when insIndex < curIndex ->
-                ins (curIndex - stringLength l - sizeRight l) l (fun l' ->
-                    T(h, l', v.PlusLeft chr.Length line, r) 
+                ins (curIndex - 1 - sizeRight l) l (fun l' ->
+                    T(h, l', v.PlusLeft line, r) 
                     |> skew |> split |> cont
                 )
-            | T(h, l, v, r) when insIndex > curIndex + v.String.Length ->
-                ins (curIndex + v.String.Length + sizeLeft r) r (fun r' -> 
-                    T(h, l, v.PlusRight chr.Length line, r') 
+            | T(h, l, v, r) when insIndex > curIndex ->
+                ins (curIndex + 1 + sizeLeft r) r (fun r' -> 
+                    T(h, l, v.PlusRight line, r') 
                     |> skew |> split |> cont
                 )
-            | T(h, l, v, r) when insIndex = curIndex ->
-                (* We want to insert at the same index as this node. *)
-                if v.String.Length >= TargetNodeLength then
-                    T(h, insMax chr line l, v.PlusLeft chr.Length line, r) 
-                    |> skew |> split |> cont
-                else
-                    let vn = {v with String = chr + v.String}
-                    T(h, l, vn, r)
-                    |> skew |> split |> cont
-            | T(h, l, v, r) when insIndex = curIndex + v.String.Length ->
-                (* We want to insert at the end of this node. *)
-                if v.String.Length >= TargetNodeLength then
-                    T(h, l, v, insMin chr line r)
-                    |> skew |> split |> cont
-                else
-                    let vn = {v with String = v.String + chr}
-                    T(h, l, vn, r)
-                    |> skew |> split |> cont
             | T(h, l, v, r) ->
-                (* We want to insert somewhere between the start and end of this node. *)
-                let difference = insIndex - curIndex
-                let v1 = v.String[0..difference - 1]
-                let v3 = v.String[difference..]
-                if v.String.Length >= TargetNodeLength then
-                    let lchr = v1 + chr
-                    let lchrLines = stringLines lchr
-                    let vn = {v with 
-                                String = v3;
-                                LeftIdx = v.LeftIdx + lchr.Length; 
-                                LeftLns = v.LeftLns + lchrLines; }
-                    T(h, insMax lchr lchrLines l, vn, r)
-                    |> skew |> split |> cont
-                else
-                    let vn = {v with String = v1 + chr + v3}
-                    T(h, l, vn, r)
-                    |> skew |> split |> cont
+                (* We want to insert at the same index as this node. *)
+                T(h, insMax chr line l topLevelCont, v.PlusLeft line, r) 
+                |> skew |> split |> cont
 
         ins (sizeLeft rope) rope topLevelCont
 
@@ -122,32 +88,14 @@ module internal RopeTree =
             | E -> ()
             | T(h, l, v, r) ->
                 if start < curIndex
-                then sub (curIndex - stringLength l - sizeRight l) l
-                let nextIndex = curIndex + v.String.Length
+                then sub (curIndex - 1 - sizeRight l) l
 
-                if start <= curIndex && finish >= nextIndex then 
-                    (* Node is fully in range. *)
-                    for i in v.String do
-                        acc.Add i
-                elif start >= curIndex && finish <= nextIndex then
-                    (* Range is within node. *)
-                    let strStart = start - curIndex
-                    let length = finish - start
-                    for i in v.String.Substring(strStart, length) do
-                        acc.Add i
-                elif finish < nextIndex && finish >= curIndex then
-                    (* Start of node is within range. *)
-                    let length = finish - curIndex
-                    for i in v.String.Substring(0, length) do
-                        acc.Add i
-                elif start > curIndex && start <= nextIndex then
-                    (* End of node is within range. *)
-                    let strStart = start - curIndex
-                    for i in v.String[strStart..] do
+                if start <= curIndex && finish > curIndex then 
+                    for i in v.Char do
                         acc.Add i
 
-                if finish > nextIndex
-                then sub (nextIndex + sizeLeft r) r
+                if finish > curIndex
+                then sub (curIndex + 1 + sizeLeft r) r
 
         sub (sizeLeft rope) rope
         new string(acc.ToArray())
@@ -163,7 +111,7 @@ module internal RopeTree =
                 then lin (curLine - lineLength l - linesRight l) l
 
                 if line = curLine then 
-                    for i in v.String do
+                    for i in v.Char do
                         acc.Add i
 
                 if line >= curLine
@@ -180,7 +128,7 @@ module internal RopeTree =
         let acc = ResizeArray<int>()
 
         fold (fun pos node -> 
-            if node.String = startChar && substring pos strLength rope.Tree = string then
+            if node.Char = startChar && substring pos strLength rope.Tree = string then
                 acc.Add pos
             pos + 1
         ) 0 rope.Tree |> ignore
@@ -193,7 +141,7 @@ module internal RopeTree =
     let text rope = 
         let arr = ResizeArray<char>()
         fold (fun _ node -> 
-            for i in node.String do
+            for i in node.Char do
                 arr.Add i
         ) () rope.Tree
         new string(arr.ToArray())

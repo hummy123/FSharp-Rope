@@ -11,20 +11,26 @@ open System.Globalization
 
  /// A rope is a data structure that allows manipulating text in O(log n) time.
 module Rope =
-
-    /// Returns a slice of a string given the level.
-    let inline private stringSlice (string: string) (level: int) =
-        let start = TargetNodeLength * level
-        let finish = TargetNodeLength * (level + 1) - 1
-        string[start..finish]
-
     /// Returns a Rope with the string inserted.
     let insert insIndex (str: string) rope =
         if str <> ""
         then
             (* Explicit mutability and a while-loop is faster than 
              * tail recursion in my tests for some reason. *)
-            let tree = insertChr insIndex str (stringLines str) rope.Tree
+            let mutable tree = rope.Tree
+            let mutable idx = insIndex
+            let mutable line = HasNoLine
+            let mutable cur = ""
+            let enumerator = StringInfo.GetTextElementEnumerator(str)
+
+            while enumerator.MoveNext() do
+                cur <- enumerator.GetTextElement()
+                line <-
+                        if cur.Contains("\n") || cur.Contains("\r")
+                        then HasLine
+                        else HasNoLine
+                tree <- insertChr idx cur line tree
+                idx <- idx + 1
 
             let (totalTextLen, totalLineLen) = idxLnSize tree
             { Tree = tree; TextLength = totalTextLen; LineCount = totalLineLen }
@@ -48,7 +54,7 @@ module Rope =
                             if cur.Contains("\n") || cur.Contains("\r")
                             then HasLine
                             else HasNoLine
-                    tree <- insMax cur line tree
+                    tree <- insMax cur line tree topLevelCont
 
                 let (totalTextLen, totalLineLen) = idxLnSize tree
                 { Tree = tree; TextLength = totalTextLen; LineCount = totalLineLen }
@@ -70,7 +76,7 @@ module Rope =
     let empty = { Tree = E; TextLength = 0; LineCount = 0; }
 
     /// Creates a Rope with the specified string.
-    let create str = insert 0 str empty
+    let create str = append str empty
 
     /// Returns a string containing all text in the rope.
     /// Takes O(n) time. Recommended to use substring or getLine functions

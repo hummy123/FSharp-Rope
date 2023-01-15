@@ -4,7 +4,7 @@ open Types
 
 module internal RopeNode =
     let inline create chr line = {
-        String = chr;
+        Char = chr;
         Lines = line;
         LeftIdx = 0;
         RightIdx = 0;
@@ -20,7 +20,7 @@ module internal RopeNode =
             RightLns = rightLns; }
 
     let inline setChar chr node =
-        { node with String = chr }
+        { node with Char = chr }
 
     let inline setIndex leftIdx rightIdx node = 
         { node with
@@ -35,14 +35,14 @@ module internal RopeNode =
         { node with
             RightIdx = rightIdx; }
 
-    let inline plusLeft idx line node = 
+    let inline plusLeft line node = 
         { node with
-            LeftIdx = node.LeftIdx + idx;
+            LeftIdx = node.LeftIdx + 1;
             LeftLns = node.LeftLns + line }
 
-    let inline plusRight idx line node = 
+    let inline plusRight line node = 
         { node with 
-            RightIdx = node.RightIdx + idx;
+            RightIdx = node.RightIdx + 1;
             RightLns = node.RightLns + line }
 
     let inline decrLeft node = 
@@ -57,8 +57,8 @@ module internal RopeNode =
         member inline this.SetIndex leftIdx rightIdx = setIndex leftIdx rightIdx this
         member inline this.SetRight rightIdx = setRight rightIdx this
         member inline this.SetLeft leftIdx = setLeft leftIdx this
-        member inline this.PlusLeft idx line = plusLeft idx line this
-        member inline this.PlusRight idx line = plusRight idx line this
+        member inline this.PlusLeft line = plusLeft line this
+        member inline this.PlusRight line = plusRight line this
         member inline this.DecrLeft() = decrLeft this
         member inline this.DecrRight() = decrRight this
         member inline this.SetChar chr = setChar chr this

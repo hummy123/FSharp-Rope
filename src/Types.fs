@@ -3,7 +3,7 @@
 module Types =
     /// A RopeNode contains a character with index metadata.
     type RopeNode = {
-        String: string;
+        Char: string;
         Lines: int;
         LeftIdx: int;
         RightIdx: int;
@@ -31,4 +31,4 @@ module Types =
     let HasNoLine = 0
 
     [<Literal>]
-    let TargetNodeLength = 32
+    let MaxNodeLength = 32

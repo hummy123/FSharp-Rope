@@ -7,12 +7,12 @@ open Types
     let inline size node =
         match node with
         | E -> 0
-        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + v.String.Length
+        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1
 
     let inline stringLength node =
         match node with
         | E -> 0
-        | T(_, l, v, _) -> v.String.Length
+        | T(_, l, v, _) -> v.Char.Length
 
     let inline lines node =
         match node with
@@ -27,7 +27,7 @@ open Types
     let inline idxLnSize node =
         match node with
         | E -> 0, 0
-        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + v.String.Length, v.LeftLns + v.RightLns + v.Lines
+        | T(_, _, v, _) -> v.LeftIdx + v.RightIdx + 1, v.LeftLns + v.RightLns + v.Lines
 
     let inline sizeLeft node = 
         match node with 
@@ -48,11 +48,3 @@ open Types
         match node with
         | E -> 0
         | T(_, _, v, r) -> v.RightLns
-
-    /// Returns the number of line breaks in a string.
-    let inline stringLines (string: string) = 
-        let mutable lines = 0
-        for i in string do // ignore \r\n case for now
-            if i = '\n' || i = '\r' then
-                lines <- lines + 1
-        lines
